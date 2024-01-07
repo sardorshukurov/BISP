@@ -1,0 +1,18 @@
+using Microsoft.Extensions.Configuration;
+
+namespace Welisten.Common.Settings;
+
+public static class CommonSettingsFactory
+{
+    public static IConfiguration Create(IConfiguration? configuration)
+    {
+        var conf = configuration ?? new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), false)
+            .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.development.json"), true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        return conf;
+    }
+}
