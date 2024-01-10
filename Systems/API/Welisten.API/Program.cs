@@ -1,44 +1,60 @@
-var builder = WebApplication.CreateBuilder(args);
+using Welisten.API;
+using Welisten.API.Configuration;
+using Welisten.Common.Settings;
+using Welisten.Context;
+using Welisten.Context.Seeder;
+using Welisten.Context.Setup;
+using Welisten.Services.Logger.Logger;
+using Welisten.Services.Settings.AppSettings;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+var mainSettings = CommonSettings.Load<MainSettings>("Main");
+var logSettings = CommonSettings.Load<LogSettings>("Log");
+var swaggerSettings = CommonSettings.Load<SwaggerSettings>("Swagger");
+
+var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+
+builder.AddAppLogger(mainSettings, logSettings);
+
+services.AddHttpContextAccessor();
+
+services.AddAppDbContext(builder.Configuration);
+
+services.AddAppCors();
+
+services.AddAppHealthChecks();
+
+services.AddAppVersioning();
+
+services.AddAppSwagger(mainSettings, swaggerSettings);
+
+services.AddAppAutoMappers();
+
+services.AddAppValidator();
+
+services.AddAppControllerAndViews();
+
+services.RegisterServices(builder.Configuration);
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+var logger = app.Services.GetRequiredService<IAppLogger>();
 
-app.UseHttpsRedirection();
+app.UseAppCors();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAppHealthChecks();
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+app.UseAppSwagger();
+
+app.UseAppControllerAndViews();
+
+DbInitializer.Execute(app.Services);
+
+DbSeeder.Execute(app.Services);
+
+logger.Information("The Welisten.API has started");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+logger.Information("The Welisten.API has stopped");

@@ -4,7 +4,7 @@ namespace Welisten.Common.Settings;
 
 public static class CommonSettingsFactory
 {
-    public static IConfiguration Create(IConfiguration? configuration)
+    public static IConfiguration Create(IConfiguration configuration = null)
     {
         var conf = configuration ?? new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
