@@ -6,21 +6,14 @@ using Welisten.Services.Settings.AppSettings;
 
 namespace Welisten.API.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel(SwaggerSettings settings) : PageModel
 {
     [BindProperty]
-    public bool OpenApiEnabled => _swaggerSettings.Enabled;
+    public bool OpenApiEnabled => settings.Enabled;
 
     [BindProperty]
     public string Version => Assembly.GetExecutingAssembly().GetAssemblyVersion()!;
 
-
-    private readonly SwaggerSettings _swaggerSettings;
-
-    public IndexModel(SwaggerSettings settings)
-    {
-        _swaggerSettings = settings;
-    }
 
     public void OnGet()
     {

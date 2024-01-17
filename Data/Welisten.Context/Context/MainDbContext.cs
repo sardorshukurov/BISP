@@ -1,31 +1,19 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Welisten.Context.Context.Configuration;
+using Welisten.Context.Entities.User;
 
 namespace Welisten.Context.Context;
 
-public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(options)
+public class MainDbContext
+    : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
-    // public DbSet<TestEntity> TestEntities { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public MainDbContext(DbContextOptions<MainDbContext> options) : base(options) { }
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(builder);
         
-        // modelBuilder.ConfigureTestEntities();
+        builder.ConfigureUsers();
     }
 }
-
-// public class TestEntity
-// {
-//     public int Id { get; set; }
-//     public string Name { get; set; }
-// }
-//
-// public static class TestEntityContextConfiguration
-// {
-//     public static void ConfigureTestEntities(this ModelBuilder modelBuilder)
-//     {
-//         modelBuilder.Entity<TestEntity>().ToTable("categories");
-//         modelBuilder.Entity<TestEntity>().Property(x => x.Name).IsRequired();
-//         modelBuilder.Entity<TestEntity>().Property(x => x.Name).HasMaxLength(100);
-//     }
-// }
