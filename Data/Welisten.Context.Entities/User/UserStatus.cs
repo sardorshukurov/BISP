@@ -1,4 +1,4 @@
-namespace Welisten.Context.Entities.User;
+namespace Welisten.Context.Entities;
 
 public enum UserStatus
 {
