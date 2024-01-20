@@ -4,6 +4,6 @@ namespace Welisten.Context.Entities;
 
 public class Reaction : BaseEntity
 {
-    public required string Name { get; set; }
+    public required ReactionType Type { get; set; }
     public virtual ICollection<Post> Posts { get; set; }
 }
