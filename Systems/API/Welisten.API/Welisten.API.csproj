@@ -41,7 +41,9 @@
       <ProjectReference Include="..\..\..\Data\Welisten.Context.Seeder\Welisten.Context.Seeder.csproj" />
       <ProjectReference Include="..\..\..\Data\Welisten.Context\Welisten.Context.csproj" />
       <ProjectReference Include="..\..\..\Services\Welisten.Services.Logger\Welisten.Services.Logger.csproj" />
+      <ProjectReference Include="..\..\..\Services\Welisten.Services.Posts\Welisten.Services.Posts.csproj" />
       <ProjectReference Include="..\..\..\Services\Welisten.Services.Settings\Welisten.Services.Settings.csproj" />
+      <ProjectReference Include="..\..\..\Services\Welisten.Services.UserAccounts\Welisten.Services.UserAccounts.csproj" />
     </ItemGroup>
 
 </Project>

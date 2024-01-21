@@ -11,6 +11,11 @@ public class Post : BaseEntity
     public required string Text { get; set; }
     public required DateTime Date { get; set; } = DateTime.Now;
     public required bool IsAnonymous { get; set; } = false;
+
+    public Guid UserId { get; set; }
+    public virtual User User { get; set; }
+    
+    public virtual PostCount PostCount { get; set; }
     public virtual ICollection<Reaction>? Reactions { get; set; }
     public virtual ICollection<Comment>? Comments { get; set; }
 }

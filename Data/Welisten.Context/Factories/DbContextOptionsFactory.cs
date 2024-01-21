@@ -60,8 +60,8 @@ public static class DbContextOptionsFactory
                 builder.EnableSensitiveDataLogging();
             }
             
-            builder.UseLazyLoadingProxies(true);
-            //builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
+            //builder.UseLazyLoadingProxies(true);
+            builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
         };
     }
 }

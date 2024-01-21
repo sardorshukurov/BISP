@@ -8,9 +8,9 @@ public static class UsersContextConfiguration
 {
     public static void ConfigureUsers(this ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().ToTable("users");
+        modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<User>().Property(x => x.FirstName).HasMaxLength(50).IsRequired();
-        modelBuilder.Entity<User>().Property(x => x.LastName).HasMaxLength(50).IsRequired();
+        modelBuilder.Entity<User>().Property(x => x.LastName).HasMaxLength(50);
         modelBuilder.Entity<User>().HasMany(x => x.Topics).WithMany(x => x.Users);
         modelBuilder.Entity<IdentityRole<Guid>>().ToTable("user_roles");
         modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("user_tokens");

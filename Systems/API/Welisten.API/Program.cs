@@ -1,15 +1,17 @@
-using Welisten.API;
+ using Welisten.API;
 using Welisten.API.Configuration;
 using Welisten.Common.Settings;
 using Welisten.Context;
 using Welisten.Context.Seeder;
 using Welisten.Context.Setup;
 using Welisten.Services.Logger.Logger;
+using Welisten.Services.Posts;
 using Welisten.Services.Settings.AppSettings;
 
 var mainSettings = CommonSettings.Load<MainSettings>("Main");
 var logSettings = CommonSettings.Load<LogSettings>("Log");
 var swaggerSettings = CommonSettings.Load<SwaggerSettings>("Swagger");
+var identitySettings = CommonSettings.Load<IdentitySettings>("Identity");
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -21,6 +23,8 @@ services.AddHttpContextAccessor();
 services.AddAppDbContext(builder.Configuration);
 
 services.AddAppCors();
+
+services.AddAppAuth(identitySettings);
 
 services.AddAppHealthChecks();
 
@@ -36,7 +40,6 @@ services.AddAppControllerAndViews();
 
 services.RegisterServices(builder.Configuration);
 
-
 var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<IAppLogger>();
@@ -46,6 +49,8 @@ app.UseAppCors();
 app.UseAppHealthChecks();
 
 app.UseAppSwagger();
+
+app.UseAppAuth();
 
 app.UseAppControllerAndViews();
 

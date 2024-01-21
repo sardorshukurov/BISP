@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Welisten.Context.Context;
@@ -11,9 +12,11 @@ using Welisten.Context.Context;
 namespace Welisten.Context.Migrations.PgSql.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240121095027_AddPostConfugration")]
+    partial class AddPostConfugration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,11 +293,16 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsAnonymous")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("PostCountId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -314,6 +322,8 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PostCountId");
+
                     b.HasIndex("Uid")
                         .IsUnique();
 
@@ -325,10 +335,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
             modelBuilder.Entity("Welisten.Context.Entities.PostCount", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CommentCount")
                         .HasColumnType("integer");
@@ -412,6 +419,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -420,11 +428,6 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -581,8 +584,8 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
             modelBuilder.Entity("Welisten.Context.Entities.Post", b =>
                 {
                     b.HasOne("Welisten.Context.Entities.PostCount", "PostCount")
-                        .WithOne("Post")
-                        .HasForeignKey("Welisten.Context.Entities.Post", "Id")
+                        .WithMany()
+                        .HasForeignKey("PostCountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -595,6 +598,17 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.Navigation("PostCount");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Welisten.Context.Entities.PostCount", b =>
+                {
+                    b.HasOne("Welisten.Context.Entities.Post", "Post")
+                        .WithOne()
+                        .HasForeignKey("Welisten.Context.Entities.PostCount", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Welisten.Context.Entities.Comment", b =>
@@ -610,12 +624,6 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
             modelBuilder.Entity("Welisten.Context.Entities.Post", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("Welisten.Context.Entities.PostCount", b =>
-                {
-                    b.Navigation("Post")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Welisten.Context.Entities.User", b =>

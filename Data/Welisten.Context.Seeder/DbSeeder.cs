@@ -40,8 +40,11 @@ public static class DbSeeder
             return;
 
         await using var context = DbContext(serviceProvider);
-        
-        // TODO: add data
+
+        if (await context.Reactions.AnyAsync())
+            return;
+
+        await context.Reactions.AddRangeAsync(new DemoHelper().Reactions);
         
         await context.SaveChangesAsync();
     }
