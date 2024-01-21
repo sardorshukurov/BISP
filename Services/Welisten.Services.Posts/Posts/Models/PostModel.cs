@@ -11,7 +11,7 @@ public class PostModel
     public required bool IsAnonymous { get; set; }
     
     public Guid? UserId { get; set; }
-    public User? User { get; set; }
+    public UserDto? User { get; set; }
     public required IEnumerable<Reaction> Reactions { get; set; }
     public int CommentCount { get; set; }
     public int LikeCount { get; set; }
@@ -21,17 +21,19 @@ public class PostModelProfile : Profile
 {
     public PostModelProfile()
     {
+        CreateMap<User, UserDto>();
+        
         CreateMap<Post, PostModel>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Uid))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.IsAnonymous ? (Guid?)null : src.UserId))
             .ForMember(dest => dest.User, opt => opt.MapFrom<PostUserResolver>());
     }
 
-    public class PostUserResolver : IValueResolver<Post, PostModel, User?>
+    public class PostUserResolver : IValueResolver<Post, PostModel, UserDto>
     {
-        public User? Resolve(Post source, PostModel destination, User? member, ResolutionContext context)
+        public UserDto? Resolve(Post source, PostModel destination, UserDto? member, ResolutionContext context)
         {
-            return source.IsAnonymous ? null : source.User;
+            return source.IsAnonymous ? null : context.Mapper.Map<UserDto>(source.User);
         }
     }
 }

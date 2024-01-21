@@ -34,7 +34,7 @@ public class PostService : IPostService
             .Include(x => x.User)
             .Include(x => x.PostCount)
             .ToListAsync();
-
+        
         var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
         
         return result;

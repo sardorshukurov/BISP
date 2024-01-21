@@ -4,7 +4,7 @@ namespace Welisten.Common.Settings;
 
 public abstract class CommonSettings
 {
-    public static T Load<T>(string key, IConfiguration configuration = null)
+    public static T Load<T>(string key, IConfiguration? configuration = null)
     {
         var settings = (T)Activator.CreateInstance(typeof(T));
 
