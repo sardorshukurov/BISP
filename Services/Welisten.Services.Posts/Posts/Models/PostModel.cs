@@ -40,7 +40,7 @@ public class PostModelProfile : Profile
                 opt.MapFrom<PostTopicsResolver>());
     }
 
-    public class PostUserResolver : IValueResolver<Post, PostModel, UserDto>
+    private class PostUserResolver : IValueResolver<Post, PostModel, UserDto>
     {
         public UserDto? Resolve(Post source, PostModel destination, UserDto? member, ResolutionContext context)
         {
@@ -48,7 +48,7 @@ public class PostModelProfile : Profile
         }
     }
 
-    public class PostReactionsResolver : IValueResolver<Post, PostModel, ICollection<ReactionDto>>
+    private class PostReactionsResolver : IValueResolver<Post, PostModel, ICollection<ReactionDto>>
     {
         public ICollection<ReactionDto> Resolve(Post source, PostModel destination, ICollection<ReactionDto> member, ResolutionContext context)
         {
@@ -56,7 +56,7 @@ public class PostModelProfile : Profile
         }
     }
     
-    public class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<TopicDto>>
+    private class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<TopicDto>>
     {
         public ICollection<TopicDto> Resolve(Post source, PostModel destination, ICollection<TopicDto> member, ResolutionContext context)
         {

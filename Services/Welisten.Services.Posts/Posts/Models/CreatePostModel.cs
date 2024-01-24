@@ -14,7 +14,7 @@ public class CreatePostModel
     public required bool IsAnonymous { get; set; } = false;
     public Guid UserId { get; set; }
     public required IEnumerable<ReactionDto> Reactions { get; set; }
-    public required IEnumerable<Topic> Topics { get; set; }
+    public required IEnumerable<TopicDto> Topics { get; set; }
 }
 
 public class CreatePostModelProfile : Profile
@@ -22,18 +22,29 @@ public class CreatePostModelProfile : Profile
     public CreatePostModelProfile()
     {
         CreateMap<ReactionDto, Reaction>();
+        CreateMap<TopicDto, Topic>();
         CreateMap<CreatePostModel, Post>()
             .ForMember(dest => dest.UserId, opt =>
                 opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.Reactions, opt => 
-                opt.MapFrom<PostReactionsResolver>());
+            .ForMember(dest => dest.Reactions, opt =>
+                opt.MapFrom<PostReactionsResolver>())
+            .ForMember(dest => dest.Topics, opt =>
+                opt.MapFrom<PostTopicsResolver>());
     }
     
-    public class PostReactionsResolver : IValueResolver<CreatePostModel, Post, ICollection<Reaction>>
+    private class PostReactionsResolver : IValueResolver<CreatePostModel, Post, ICollection<Reaction>>
     {
         public ICollection<Reaction> Resolve(CreatePostModel source, Post destination, ICollection<Reaction> member, ResolutionContext context)
         {
             return context.Mapper.Map<ICollection<Reaction>>(source.Reactions);
+        }
+    }
+    
+    private class PostTopicsResolver : IValueResolver<CreatePostModel, Post, ICollection<Topic>>
+    {
+        public ICollection<Topic> Resolve(CreatePostModel source, Post destination, ICollection<Topic> member, ResolutionContext context)
+        {
+            return context.Mapper.Map<ICollection<Topic>>(source.Topics);
         }
     }
 }

@@ -23,13 +23,9 @@ public class MainDbContext
     {
         base.OnModelCreating(builder);
         
-        // builder.ConfigureComments();
-        // builder.ConfigureMoods();
-        // builder.ConfigureMoodTypes();
         builder.ConfigurePosts();
-        builder.ConfigurePostCounts();
-        // builder.ConfigureReactions();
-        // builder.ConfigureTopics();
+        builder.ConfigurePostCounts(); 
+        builder.ConfigureTopics(); 
         builder.ConfigureUsers();
     }
 }

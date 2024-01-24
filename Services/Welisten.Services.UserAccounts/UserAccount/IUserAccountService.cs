@@ -3,5 +3,6 @@ namespace Welisten.Services.UserAccounts;
 public interface IUserAccountService
 {
     Task<bool> IsEmpty();
-    Task<UserAccountModel> Create(RegisterUserAccountModel model);
+    Task<UserAccountModel> Register(RegisterDto registerDto);
+    Task<string> Login(LoginDto loginDto);
 }

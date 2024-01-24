@@ -4,6 +4,16 @@ namespace Welisten.Context.Seeder.Demo;
 
 public class DemoHelper
 {
+    public readonly IEnumerable<User> Users =
+    [
+        new User
+        {
+            Name = "Sardor",
+            FirstName = "Sardor",
+            Email = "sardor.2002@bk.ru"
+        }
+    ];
+    
     public readonly IEnumerable<Reaction> Reactions = [
         new Reaction
         {

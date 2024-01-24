@@ -1,8 +1,11 @@
+using System.Text;
 using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Welisten.Common.Security;
+using Welisten.Common.Settings;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
 using Welisten.Services.Settings.AppSettings;
@@ -11,10 +14,8 @@ namespace Welisten.API.Configuration;
 
 public static class AuthConfiguration
 {
-    public static IServiceCollection AddAppAuth(this IServiceCollection services, IdentitySettings settings)
+    public static IServiceCollection AddAppAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        IdentityModelEventSource.ShowPII = true;
-
         services
             .AddIdentity<User, IdentityRole<Guid>>(opt =>
             {
@@ -30,25 +31,24 @@ public static class AuthConfiguration
 
         services.AddAuthentication(options =>
         {
-            options.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-        })
-            .AddJwtBearer(IdentityServerAuthenticationDefaults.AuthenticationScheme, options =>
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(jwt =>
+        {
+            var settings = CommonSettings.Load<JwtConfig>("JwtConfig", configuration);
+            var key = Encoding.ASCII.GetBytes(settings.Secret);
+            jwt.SaveToken = true;
+            jwt.TokenValidationParameters = new TokenValidationParameters()
             {
-                options.RequireHttpsMetadata = settings.Url.StartsWith("https://");
-                options.Authority = settings.Url;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = false,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RequireExpirationTime = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-                options.Audience = "api";
-            });
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = false
+            };
+        });
 
 
         services.AddAuthorization();

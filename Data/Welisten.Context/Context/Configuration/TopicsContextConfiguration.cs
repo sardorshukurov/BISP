@@ -7,8 +7,8 @@ public static class TopicsContextConfiguration
 {
     public static void ConfigureTopics(this ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Topic>().ToTable("topics");
-        modelBuilder.Entity<Topic>().Property(x => x.Name).IsRequired();
+        modelBuilder.Entity<Topic>().ToTable("Topics");
+        modelBuilder.Entity<Topic>().Property(x => x.Type).IsRequired();
         modelBuilder.Entity<Topic>().HasMany(x => x.Users).WithMany(x => x.Topics);
     }
 }

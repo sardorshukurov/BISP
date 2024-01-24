@@ -52,7 +52,13 @@ public static class DbSeeder
             await context.Topics.AddRangeAsync(new DemoHelper().Topics);
             await context.SaveChangesAsync();
         }
-
+        
+        if (!await context.Users.AnyAsync())
+        {
+            await context.Users.AddRangeAsync(new DemoHelper().Users);
+            await context.SaveChangesAsync();
+        }
+        
         return;
     }
 }
