@@ -12,7 +12,9 @@ public class PostModel
     
     public Guid? UserId { get; set; }
     public UserDto? User { get; set; }
-    public required IEnumerable<Reaction> Reactions { get; set; }
+    
+    public required ICollection<TopicDto> Topics { get; set; }
+    public required ICollection<ReactionDto> Reactions { get; set; }
     public int CommentCount { get; set; }
     public int LikeCount { get; set; }
 }
@@ -22,11 +24,20 @@ public class PostModelProfile : Profile
     public PostModelProfile()
     {
         CreateMap<User, UserDto>();
+        CreateMap<Reaction, ReactionDto>();
+        CreateMap<Topic, TopicDto>();
         
         CreateMap<Post, PostModel>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Uid))
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.IsAnonymous ? (Guid?)null : src.UserId))
-            .ForMember(dest => dest.User, opt => opt.MapFrom<PostUserResolver>());
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.Uid))
+            .ForMember(dest => dest.UserId, opt => 
+                opt.MapFrom(src => src.IsAnonymous ? (Guid?)null : src.UserId))
+            .ForMember(dest => dest.User, opt => 
+                opt.MapFrom<PostUserResolver>())
+            .ForMember(dest => dest.Reactions, opt => 
+                opt.MapFrom<PostReactionsResolver>())
+            .ForMember(dest => dest.Topics, opt =>
+                opt.MapFrom<PostTopicsResolver>());
     }
 
     public class PostUserResolver : IValueResolver<Post, PostModel, UserDto>
@@ -34,6 +45,22 @@ public class PostModelProfile : Profile
         public UserDto? Resolve(Post source, PostModel destination, UserDto? member, ResolutionContext context)
         {
             return source.IsAnonymous ? null : context.Mapper.Map<UserDto>(source.User);
+        }
+    }
+
+    public class PostReactionsResolver : IValueResolver<Post, PostModel, ICollection<ReactionDto>>
+    {
+        public ICollection<ReactionDto> Resolve(Post source, PostModel destination, ICollection<ReactionDto> member, ResolutionContext context)
+        {
+            return context.Mapper.Map<ICollection<ReactionDto>>(source.Reactions);
+        }
+    }
+    
+    public class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<TopicDto>>
+    {
+        public ICollection<TopicDto> Resolve(Post source, PostModel destination, ICollection<TopicDto> member, ResolutionContext context)
+        {
+            return context.Mapper.Map<ICollection<TopicDto>>(source.Topics);
         }
     }
 }

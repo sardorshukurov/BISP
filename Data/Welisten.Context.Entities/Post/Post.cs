@@ -5,7 +5,7 @@ namespace Welisten.Context.Entities;
 
 public class Post : BaseEntity
 {
-    [MaxLength(100), MinLength(20)]
+    [MaxLength(100), MinLength(5)]
     public required string Title { get; set; }
     [MaxLength(3000), MinLength(50)]
     public required string Text { get; set; }
@@ -15,7 +15,8 @@ public class Post : BaseEntity
     public Guid UserId { get; set; }
     public virtual User User { get; set; }
     
-    public virtual PostCount PostCount { get; set; }
-    public virtual ICollection<Reaction>? Reactions { get; set; }
+    public virtual required PostCount PostCount { get; set; }
+    public virtual required ICollection<Reaction> Reactions { get; set; }
     public virtual ICollection<Comment>? Comments { get; set; }
+    public virtual required ICollection<Topic> Topics { get; set; }
 }
