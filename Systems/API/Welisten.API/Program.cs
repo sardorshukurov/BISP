@@ -12,7 +12,6 @@ using Welisten.Services.Settings.AppSettings;
 var mainSettings = CommonSettings.Load<MainSettings>("Main");
 var logSettings = CommonSettings.Load<LogSettings>("Log");
 var swaggerSettings = CommonSettings.Load<SwaggerSettings>("Swagger");
-var identitySettings = CommonSettings.Load<IdentitySettings>("Identity");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,13 +27,13 @@ services.AddAppDbContext(builder.Configuration);
 
 services.AddAppCors();
 
-services.AddAppAuth(builder.Configuration);
-
 services.AddAppHealthChecks();
 
 services.AddAppVersioning();
 
 services.AddAppSwagger(mainSettings, swaggerSettings);
+
+services.AddAppAuth(builder.Configuration);
 
 services.AddAppAutoMappers();
 

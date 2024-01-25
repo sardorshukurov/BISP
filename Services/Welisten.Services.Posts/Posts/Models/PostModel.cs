@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AutoMapper;
 using Welisten.Context.Entities;
 
@@ -10,6 +11,7 @@ public class PostModel
     public required string Text { get; set; }
     public required bool IsAnonymous { get; set; }
     
+    [JsonIgnore]
     public Guid? UserId { get; set; }
     public UserDto? User { get; set; }
     

@@ -12,7 +12,6 @@ public class CreatePostModel
     public required string Title { get; set; }
     public required string Text { get; set; }
     public required bool IsAnonymous { get; set; } = false;
-    public Guid UserId { get; set; }
     public required IEnumerable<ReactionDto> Reactions { get; set; }
     public required IEnumerable<TopicDto> Topics { get; set; }
 }
@@ -24,8 +23,6 @@ public class CreatePostModelProfile : Profile
         CreateMap<ReactionDto, Reaction>();
         CreateMap<TopicDto, Topic>();
         CreateMap<CreatePostModel, Post>()
-            .ForMember(dest => dest.UserId, opt =>
-                opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.Reactions, opt =>
                 opt.MapFrom<PostReactionsResolver>())
             .ForMember(dest => dest.Topics, opt =>
@@ -54,13 +51,13 @@ public class CreatePostModelValidator : AbstractValidator<CreatePostModel>
     {
         RuleFor(x => x.Title).PostTitle();
         RuleFor(x => x.Text).PostText();
-        RuleFor(x => x.UserId)
-            .UserId()
-            .Must((id) =>
-            {
-                using var context = dbContextFactory.CreateDbContext();
-                var found = context.Users.Any(u => u.Id == id);
-                return found;
-            }).WithMessage("User not found");
+        // RuleFor(x => x.UserId)
+        //     .UserId()
+        //     .Must((id) =>
+        //     {
+        //         using var context = dbContextFactory.CreateDbContext();
+        //         var found = context.Users.Any(u => u.Id == id);
+        //         return found;
+        //     }).WithMessage("User not found");
     }
 }

@@ -56,7 +56,7 @@ public class PostService : IPostService
         return result;
     }
 
-    public async Task<PostModel> Create(CreatePostModel model)
+    public async Task<PostModel> Create(CreatePostModel model, Guid userId)
     {
         await _createValidator.CheckAsync(model);
 
@@ -73,10 +73,11 @@ public class PostService : IPostService
         {
             Post = post
         };
-
+        
         // Associate the Post and PostCount entities
         post.PostCount = postCount;
 
+        post.UserId = userId;
         // Add the entities to the context
         await context.Posts.AddAsync(post);
         await context.PostCounts.AddAsync(postCount);
@@ -84,7 +85,10 @@ public class PostService : IPostService
         // Save changes to the database
         await context.SaveChangesAsync();
 
-        return _mapper.Map<PostModel>(post);
+        var createdPost = _mapper.Map<PostModel>(post);
+        createdPost.UserId = userId;
+        
+        return createdPost;
     }
     public Task Update(Guid id, UpdatePostModel model)
     {

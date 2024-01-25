@@ -100,9 +100,12 @@ public class UserAccountService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim("Id", user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Name),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iss, _jwtConfig.Issuer),
+                new Claim(JwtRegisteredClaimNames.Aud, _jwtConfig.Audience)
             }),
             Expires = DateTime.Now.AddHours(4),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
