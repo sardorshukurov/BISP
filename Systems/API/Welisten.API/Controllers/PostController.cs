@@ -1,7 +1,11 @@
 using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Welisten.API.Common;
+using Welisten.Context.Context;
 using Welisten.Services.Logger.Logger;
 using Welisten.Services.Posts;
 
@@ -16,7 +20,7 @@ public class PostController : ControllerBase
 {
     private readonly IAppLogger _logger;
     private readonly IPostService _postService;
-
+    
     public PostController(IAppLogger logger, IPostService postService)
     {
         _logger = logger;
@@ -48,8 +52,11 @@ public class PostController : ControllerBase
     [HttpPost("")]
     public async Task<IActionResult> Create(CreatePostModel request)
     {
+        if (UserHelper.IsExpired(User))
+            return Unauthorized();
+        
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    
+        
         if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
         {
             var result = await _postService.Create(request, userId);

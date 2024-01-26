@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Welisten.API.Common;
 using Welisten.Services.Comments;
 using Welisten.Services.Logger.Logger;
 
@@ -26,6 +27,9 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateCommentModel request)
     {
+        if (UserHelper.IsExpired(User))
+            return Unauthorized();
+        
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         
         if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))

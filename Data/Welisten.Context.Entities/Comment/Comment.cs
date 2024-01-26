@@ -11,7 +11,7 @@ public class Comment : BaseEntity
     public required string Text { get; set; }
     public required DateTime Date { get; set; } = DateTime.Now;
     
-    public required Guid UserId { get; set; }
+    public Guid UserId { get; set; }
     public virtual User User { get; set; }
     public required bool IsAnonymous { get; set; } = false;
 }
