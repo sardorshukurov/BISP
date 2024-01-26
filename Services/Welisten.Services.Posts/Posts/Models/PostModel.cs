@@ -14,7 +14,7 @@ public class PostModel
     [JsonIgnore]
     public Guid? UserId { get; set; }
     public UserDto? User { get; set; }
-    
+    public required DateTime Date { get; set; }
     public required ICollection<TopicDto> Topics { get; set; }
     public required ICollection<ReactionDto> Reactions { get; set; }
     public int CommentCount { get; set; }
@@ -28,12 +28,16 @@ public class PostModelProfile : Profile
         CreateMap<User, UserDto>();
         CreateMap<Reaction, ReactionDto>();
         CreateMap<Topic, TopicDto>();
-        
+
         CreateMap<Post, PostModel>()
             .ForMember(dest => dest.Id, opt => 
                 opt.MapFrom(src => src.Uid))
             .ForMember(dest => dest.UserId, opt => 
                 opt.MapFrom(src => src.IsAnonymous ? (Guid?)null : src.UserId))
+            .ForMember(dest => dest.CommentCount, opt =>
+                opt.MapFrom(src => src.PostCount.CommentCount))
+            .ForMember(dest => dest.LikeCount, opt =>
+                opt.MapFrom(src => src.PostCount.LikeCount))
             .ForMember(dest => dest.User, opt => 
                 opt.MapFrom<PostUserResolver>())
             .ForMember(dest => dest.Reactions, opt => 

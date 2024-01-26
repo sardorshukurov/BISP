@@ -55,7 +55,6 @@ public class PostController : ControllerBase
             var result = await _postService.Create(request, userId);
             return Ok(result);
         }
-        else
-            return Unauthorized();
+        return Unauthorized();
     }
 }

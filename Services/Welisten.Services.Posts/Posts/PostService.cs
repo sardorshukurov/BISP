@@ -86,8 +86,7 @@ public class PostService : IPostService
         await context.SaveChangesAsync();
 
         var createdPost = _mapper.Map<PostModel>(post);
-        createdPost.UserId = userId;
-        
+
         return createdPost;
     }
     public Task Update(Guid id, UpdatePostModel model)

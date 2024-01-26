@@ -1,4 +1,5 @@
 using Welisten.Context.Seeder;
+using Welisten.Services.Comments;
 using Welisten.Services.Logger;
 using Welisten.Services.Posts;
 using Welisten.Services.Settings;
@@ -17,6 +18,7 @@ public static class Bootstrapper
             .AddAppLogger()
             .AddDbSeeder(configuration)
             .AddPostService()
+            .AddCommentService()
             .AddUserAccountService();
             ;
 

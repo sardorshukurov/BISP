@@ -51,13 +51,5 @@ public class CreatePostModelValidator : AbstractValidator<CreatePostModel>
     {
         RuleFor(x => x.Title).PostTitle();
         RuleFor(x => x.Text).PostText();
-        // RuleFor(x => x.UserId)
-        //     .UserId()
-        //     .Must((id) =>
-        //     {
-        //         using var context = dbContextFactory.CreateDbContext();
-        //         var found = context.Users.Any(u => u.Id == id);
-        //         return found;
-        //     }).WithMessage("User not found");
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Welisten.Context.Context;
@@ -11,9 +12,11 @@ using Welisten.Context.Context;
 namespace Welisten.Context.Migrations.PgSql.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240126104218_UpdateCommentEntity")]
+    partial class UpdateCommentEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,7 +237,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Welisten.Context.Entities.Mood", b =>
@@ -577,7 +580,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
             modelBuilder.Entity("Welisten.Context.Entities.Comment", b =>
                 {
-                    b.HasOne("Welisten.Context.Entities.Post", "Post")
+                    b.HasOne("Welisten.Context.Entities.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -588,8 +591,6 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });

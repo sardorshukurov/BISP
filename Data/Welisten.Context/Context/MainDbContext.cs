@@ -25,6 +25,7 @@ public class MainDbContext
         
         builder.ConfigurePosts();
         builder.ConfigurePostCounts(); 
+        builder.ConfigureComments(); 
         builder.ConfigureTopics(); 
         builder.ConfigureUsers();
     }

@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{CF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Welisten.Identity", "Systems\Identity\Welisten.Identity\Welisten.Identity.csproj", "{AE8FAC85-45E6-47FD-929A-F80D9B99DEF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Welisten.Services.Comments", "Services\Welisten.Services.Comments\Welisten.Services.Comments.csproj", "{98010E44-D706-44CD-AE8D-37CBCB7A0C93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,7 @@ Global
 		{0B6B5AED-E8B6-4D30-B495-16DCDDC1F032} = {2471E747-8E2E-46F4-83BC-381CC785D73E}
 		{CFCC493B-E6F4-4B9D-B2C1-8F9C120E77C8} = {DEDCA36E-BF8F-4353-904F-485170BC797A}
 		{AE8FAC85-45E6-47FD-929A-F80D9B99DEF5} = {CFCC493B-E6F4-4B9D-B2C1-8F9C120E77C8}
+		{98010E44-D706-44CD-AE8D-37CBCB7A0C93} = {2471E747-8E2E-46F4-83BC-381CC785D73E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C35869AC-5343-4151-A82B-D5AFAC4CB6BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -122,5 +125,9 @@ Global
 		{AE8FAC85-45E6-47FD-929A-F80D9B99DEF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE8FAC85-45E6-47FD-929A-F80D9B99DEF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE8FAC85-45E6-47FD-929A-F80D9B99DEF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98010E44-D706-44CD-AE8D-37CBCB7A0C93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98010E44-D706-44CD-AE8D-37CBCB7A0C93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98010E44-D706-44CD-AE8D-37CBCB7A0C93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98010E44-D706-44CD-AE8D-37CBCB7A0C93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
