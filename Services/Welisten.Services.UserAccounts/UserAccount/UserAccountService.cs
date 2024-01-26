@@ -41,6 +41,31 @@ public class UserAccountService
         return !(await _userManager.Users.AnyAsync());
     }
 
+    public bool IsExpired(ClaimsPrincipal user)
+    {
+        // Check if the "exp" claim exists and is a valid DateTime
+        if (long.TryParse(user.FindFirstValue("exp"), out long unixTimestamp))
+        {
+            var expirationTime = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).UtcDateTime;
+            return expirationTime <= DateTime.UtcNow;
+        }
+
+        // If "exp" claim doesn't exist or is not a valid long, consider it expired
+        return true;
+    }
+    
+    public async Task<bool> Exists(ClaimsPrincipal user)
+    {
+        var id = user.FindFirst("Id").Value;
+    
+        if (string.IsNullOrEmpty(id))
+            return false;
+
+        var foundUser = await _userManager.FindByIdAsync(id);
+
+        return foundUser != null;
+    }
+    
     public async Task<UserAccountModel> Register(RegisterDto registerDto)
     {
         await _registerValidator.CheckAsync(registerDto);
