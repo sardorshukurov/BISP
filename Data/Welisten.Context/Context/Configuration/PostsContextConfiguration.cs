@@ -15,6 +15,9 @@ public static class PostsContextConfiguration
         modelBuilder.Entity<Post>().HasMany(x => x.Reactions)
             .WithMany(x => x.Posts)
             .UsingEntity(t => t.ToTable("PostsReactions"));
-        modelBuilder.Entity<Post>().HasMany(x => x.Comments).WithOne().HasForeignKey(x => x.PostId);
+        modelBuilder.Entity<Post>()
+            .HasMany(x => x.Comments)
+            .WithOne().HasForeignKey(x => x.PostId)
+            .OnDelete(DeleteBehavior.Cascade);;
     }
 }

@@ -1,9 +1,12 @@
+using System.Security.Authentication;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Welisten.Common.Exceptions;
 using Welisten.Common.Validator;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
+using Welisten.Services.Logger.Logger;
 
 namespace Welisten.Services.Posts;
 
@@ -13,16 +16,19 @@ public class PostService : IPostService
     private readonly IModelValidator<CreatePostModel> _createValidator;
     //private readonly IModelValidator<UpdatePostModel> _updateValidator;
 
+    private readonly IAppLogger _logger;
     private readonly IMapper _mapper;
     
     public PostService(IDbContextFactory<MainDbContext> dbContextFactory, 
         IModelValidator<CreatePostModel> createValidator, 
         //IModelValidator<UpdatePostModel> updateValidator,
+        IAppLogger logger,
         IMapper mapper)
     {
         _dbContextFactory = dbContextFactory;
         _createValidator = createValidator;
         //_updateValidator = updateValidator;
+        _logger = logger;
         _mapper = mapper;
     }   
     
@@ -89,13 +95,32 @@ public class PostService : IPostService
 
         return createdPost;
     }
-    public Task Update(Guid id, UpdatePostModel model)
+    public Task Update(Guid id, Guid userId, UpdatePostModel model)
     {
         throw new NotImplementedException();
     }
 
-    public Task Delete(Guid id)
+    public async Task Delete(Guid id, Guid userId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+            var post = await context.Posts.Where(x => x.Uid == id).FirstOrDefaultAsync();
+
+            if (post == null)
+                throw new ProcessException($"Post with ID: {id}. Not found");
+
+            if (post.UserId != userId)
+                throw new AuthenticationException("Authentication failed");
+
+            context.Posts.Remove(post);
+            await context.SaveChangesAsync();
+            _logger.Information($"Post with ID: {id} and related comments successfully deleted.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, $"Error deleting post with ID: {id}");
+            throw;
+        }
     }
 }

@@ -62,7 +62,7 @@ public class CommentController : ControllerBase
             }
             catch (ProcessException)
             {
-                return BadRequest("Comment not found");
+                return NotFound("Comment not found");
             }
             catch (AuthenticationException)
             {

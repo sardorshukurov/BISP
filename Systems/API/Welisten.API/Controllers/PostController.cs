@@ -1,9 +1,11 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Welisten.Common.Exceptions;
 using Welisten.Context.Context;
 using Welisten.Services.Logger.Logger;
 using Welisten.Services.Posts;
@@ -67,6 +69,36 @@ public class PostController : ControllerBase
             var result = await _postService.Create(request, userId);
             return Ok(result);
         }
+        return Unauthorized();
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
+        {
+            try
+            {
+                await _postService.Delete(id, userId);
+                return Ok();
+            }
+            catch (ProcessException)
+            {
+                return NotFound("Post not found");
+            }
+            catch (AuthenticationException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         return Unauthorized();
     }
 }
