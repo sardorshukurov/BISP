@@ -41,7 +41,7 @@ public class UserAccountService
         return !(await _userManager.Users.AnyAsync());
     }
 
-    public bool IsExpired(ClaimsPrincipal user)
+    public async Task<bool> IsExpired(ClaimsPrincipal user)
     {
         // Check if the "exp" claim exists and is a valid DateTime
         if (long.TryParse(user.FindFirstValue("exp"), out long unixTimestamp))

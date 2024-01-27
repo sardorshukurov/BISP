@@ -54,10 +54,10 @@ public class PostController : ControllerBase
     [HttpPost("")]
     public async Task<IActionResult> Create(CreatePostModel request)
     {
-        if (!_userService.Exists(User).Result)
+        if (!await _userService.Exists(User))
             return Unauthorized();
         
-        if (_userService.IsExpired(User))
+        if (await _userService.IsExpired(User))
             return Unauthorized();
         
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

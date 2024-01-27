@@ -1,7 +1,9 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Welisten.Common.Exceptions;
 using Welisten.Services.Comments;
 using Welisten.Services.Logger.Logger;
 using Welisten.Services.UserAccounts;
@@ -29,10 +31,10 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateCommentModel request)
     {
-        if (!_userService.Exists(User).Result)
+        if (!await _userService.Exists(User))
             return Unauthorized();
         
-        if (_userService.IsExpired(User))
+        if (await _userService.IsExpired(User))
             return Unauthorized();
         
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -41,6 +43,31 @@ public class CommentController : ControllerBase
         {
             var result = await _commentService.Create(request, userId);
             return Ok(result);
+        }
+
+        return Unauthorized();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
+        {
+            try
+            {
+                await _commentService.Delete(id, userId);
+                return Ok();
+            }
+            catch (ProcessException)
+            {
+                return BadRequest("Comment not found");
+            }
+            catch (AuthenticationException)
+            {
+                return Unauthorized();
+            }
         }
 
         return Unauthorized();

@@ -1,5 +1,7 @@
+using System.Security.Authentication;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Welisten.Common.Exceptions;
 using Welisten.Common.Validator;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
@@ -50,5 +52,21 @@ public class CommentService : ICommentService
         var createdComment = _mapper.Map<CommentModel>(comment);
 
         return createdComment;
+    }
+    
+    public async Task Delete(Guid id, Guid userId)
+    {
+        using var context = await _dbContextFactory.CreateDbContextAsync();
+        var comment = await context.Comments.Where(x => x.Uid == id).FirstOrDefaultAsync();
+
+        if (comment == null)
+            throw new ProcessException($"Comment with ID: {id}. Not found");
+
+        if (comment.UserId != userId)
+            throw new AuthenticationException("Authentication failed");
+            
+        context.Comments.Remove(comment);
+
+        await context.SaveChangesAsync();
     }
 }
