@@ -132,7 +132,7 @@ public class UserAccountService
                 new Claim(JwtRegisteredClaimNames.Iss, _jwtConfig.Issuer),
                 new Claim(JwtRegisteredClaimNames.Aud, _jwtConfig.Audience)
             }),
-            Expires = DateTime.Now.AddHours(4),
+            Expires = DateTime.Now.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha512)
         };
