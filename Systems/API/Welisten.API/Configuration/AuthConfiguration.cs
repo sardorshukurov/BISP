@@ -1,5 +1,4 @@
 using System.Text;
-using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Logging;
