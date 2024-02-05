@@ -2,5 +2,5 @@ namespace Welisten.Context.Entities;
 
 public class TopicDto
 {
-    public TopicType Type { get; set; }
+    public Guid Id { get; set; }
 }

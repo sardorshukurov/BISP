@@ -101,4 +101,34 @@ public class PostController : ControllerBase
 
         return Unauthorized();
     }
+
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update([FromRoute] Guid id, UpdatePostModel request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
+        {
+            try
+            {
+                await _postService.Update(id, userId, request);
+                return Ok();
+            }
+            catch (ProcessException)
+            {
+                return NotFound("Post not found");
+            }
+            catch (AuthenticationException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        
+        return Unauthorized();
+    }
 }

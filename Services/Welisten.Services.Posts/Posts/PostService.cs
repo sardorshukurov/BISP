@@ -14,32 +14,33 @@ public class PostService : IPostService
 {
     private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
     private readonly IModelValidator<CreatePostModel> _createValidator;
-    //private readonly IModelValidator<UpdatePostModel> _updateValidator;
+    private readonly IModelValidator<UpdatePostModel> _updateValidator;
 
     private readonly IAppLogger _logger;
     private readonly IMapper _mapper;
     
     public PostService(IDbContextFactory<MainDbContext> dbContextFactory, 
         IModelValidator<CreatePostModel> createValidator, 
-        //IModelValidator<UpdatePostModel> updateValidator,
+        IModelValidator<UpdatePostModel> updateValidator,
         IAppLogger logger,
         IMapper mapper)
     {
         _dbContextFactory = dbContextFactory;
         _createValidator = createValidator;
-        //_updateValidator = updateValidator;
+        _updateValidator = updateValidator;
         _logger = logger;
         _mapper = mapper;
     }   
     
     public async Task<IEnumerable<PostModel>> GetAll()
     {
-        using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
 
         var posts = await context.Posts
             .Include(x => x.User)
             .Include(x => x.PostCount)
             .Include(x => x.Reactions)
+            .Include(x => x.Topics)
             .ToListAsync();
         
         var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
@@ -49,12 +50,13 @@ public class PostService : IPostService
 
     public async Task<PostModel> GetById(Guid id)
     {
-        using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
 
         var post = await context.Posts
             .Include(x => x.User)
             .Include(x => x.PostCount)
             .Include(x => x.Reactions)
+            .Include(x => x.Topics)
             .FirstOrDefaultAsync(x => x.Uid == id);
 
         var result = _mapper.Map<Post, PostModel>(post);
@@ -66,8 +68,8 @@ public class PostService : IPostService
     {
         await _createValidator.CheckAsync(model);
 
-        using var context = await _dbContextFactory.CreateDbContextAsync();
-
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        
         // Create a new Post entity
         var post = _mapper.Map<Post>(model);
 
@@ -79,11 +81,19 @@ public class PostService : IPostService
         {
             Post = post
         };
-        
+
         // Associate the Post and PostCount entities
         post.PostCount = postCount;
 
         post.UserId = userId;
+
+        // Fetch existing topics by Uid
+        post.Topics = await context.Topics
+            .Where(t => model.Topics.Contains(t.Uid))
+            .ToListAsync();
+        
+        context.AttachRange(post.Topics);
+        
         // Add the entities to the context
         await context.Posts.AddAsync(post);
         await context.PostCounts.AddAsync(postCount);
@@ -95,16 +105,44 @@ public class PostService : IPostService
 
         return createdPost;
     }
-    public Task Update(Guid id, Guid userId, UpdatePostModel model)
+
+    public async Task Update(Guid id, Guid userId, UpdatePostModel model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _updateValidator.CheckAsync(model);
+
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            var post = await context.Posts.FirstOrDefaultAsync(x => x.Uid == id);
+
+            if (post == null)
+                throw new ProcessException($"Post with ID: {id}. Not found");
+
+            if (post.UserId != userId)
+                throw new AuthenticationException("Authentication failed");
+
+            context.Entry(post).State = EntityState.Modified;
+
+            post.Title = model.Title;
+            post.Text = model.Text;
+            post.IsAnonymous = model.IsAnonymous;
+            post.Topics = _mapper.Map<ICollection<Topic>>(model.Topics);
+
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.Error($"Error updating post with Id: {id}. Error message: {e}");
+            throw;
+        }
     }
 
     public async Task Delete(Guid id, Guid userId)
     {
         try
         {
-            using var context = await _dbContextFactory.CreateDbContextAsync();
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
             var post = await context.Posts.Where(x => x.Uid == id).FirstOrDefaultAsync();
 
             if (post == null)

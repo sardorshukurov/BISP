@@ -1,6 +1,9 @@
 using System.Text.Json.Serialization;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Welisten.Context.Context;
 using Welisten.Context.Entities;
+using Welisten.Services.Topics;
 
 namespace Welisten.Services.Posts;
 
@@ -15,7 +18,7 @@ public class PostModel
     public Guid? UserId { get; set; }
     public UserDto? User { get; set; }
     public required DateTime Date { get; set; }
-    public required ICollection<TopicDto> Topics { get; set; }
+    public required ICollection<string> Topics { get; set; }
     public required ICollection<ReactionDto> Reactions { get; set; }
     public int CommentCount { get; set; }
     public int LikeCount { get; set; }
@@ -27,7 +30,7 @@ public class PostModelProfile : Profile
     {
         CreateMap<User, UserDto>();
         CreateMap<Reaction, ReactionDto>();
-        CreateMap<Topic, TopicDto>();
+        CreateMap<Topic, TopicModel>();
 
         CreateMap<Post, PostModel>()
             .ForMember(dest => dest.Id, opt => 
@@ -45,7 +48,7 @@ public class PostModelProfile : Profile
             .ForMember(dest => dest.Topics, opt =>
                 opt.MapFrom<PostTopicsResolver>());
     }
-
+    
     private class PostUserResolver : IValueResolver<Post, PostModel, UserDto>
     {
         public UserDto? Resolve(Post source, PostModel destination, UserDto? member, ResolutionContext context)
@@ -62,11 +65,11 @@ public class PostModelProfile : Profile
         }
     }
     
-    private class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<TopicDto>>
+    private class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<string>>
     {
-        public ICollection<TopicDto> Resolve(Post source, PostModel destination, ICollection<TopicDto> member, ResolutionContext context)
+        public ICollection<string> Resolve(Post source, PostModel destination, ICollection<string> destMember, ResolutionContext context)
         {
-            return context.Mapper.Map<ICollection<TopicDto>>(source.Topics);
+            return context.Mapper.Map<ICollection<string>>(source.Topics.Select(x => x.Type));
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Welisten.Context.Entities;
 
 public class Topic : BaseEntity
 {
-    public required TopicType Type { get; set; }
+    public string Type { get; set; } = string.Empty;
     public virtual ICollection<User> Users { get; set; }
-    public virtual ICollection<Post> Posts { get; set; } 
+    public virtual ICollection<Post> Posts { get; set; }
 }

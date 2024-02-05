@@ -9,8 +9,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Data\Welisten.Context.Entities\Welisten.Context.Entities.csproj" />
       <ProjectReference Include="..\..\Data\Welisten.Context\Welisten.Context.csproj" />
-      <ProjectReference Include="..\Welisten.Services.Logger\Welisten.Services.Logger.csproj" />
-      <ProjectReference Include="..\Welisten.Services.Topics\Welisten.Services.Topics.csproj" />
     </ItemGroup>
 
 </Project>
