@@ -13,7 +13,6 @@ public class CreatePostModel
     public required string Title { get; set; }
     public required string Text { get; set; }
     public required bool IsAnonymous { get; set; }
-    public required ICollection<ReactionDto> Reactions { get; set; }
     public required ICollection<Guid> Topics { get; set; }
 }
 
@@ -21,21 +20,9 @@ public class CreatePostModelProfile : Profile
 {
     public CreatePostModelProfile()
     {
-        CreateMap<ReactionDto, Reaction>();
-        
         CreateMap<CreatePostModel, Post>()
-            .ForMember(dest => dest.Reactions, opt =>
-                opt.MapFrom<PostReactionsResolver>())
             .ForMember(dest => dest.Topics, opt =>
                 opt.MapFrom<PostTopicsResolver>());
-    }
-    
-    private class PostReactionsResolver : IValueResolver<CreatePostModel, Post, ICollection<Reaction>>
-    {
-        public ICollection<Reaction> Resolve(CreatePostModel source, Post destination, ICollection<Reaction> member, ResolutionContext context)
-        {
-            return context.Mapper.Map<ICollection<Reaction>>(source.Reactions);
-        }
     }
     
     private class PostTopicsResolver : IValueResolver<CreatePostModel, Post, ICollection<Topic>>
@@ -67,10 +54,6 @@ public class CreatePostModelValidator : AbstractValidator<CreatePostModel>
     {
         RuleFor(x => x.Title).PostTitle();
         RuleFor(x => x.Text).PostText();
-
-        RuleFor(x => x.Reactions)
-            .Must(reactions => reactions.Select(r => r.ReactionType).Distinct().Count() == reactions.Count)
-            .WithMessage("Reactions must be unique");
 
         RuleFor(x => x.Topics)
             .Must(topics =>

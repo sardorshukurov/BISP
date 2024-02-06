@@ -12,9 +12,6 @@ public static class PostsContextConfiguration
         modelBuilder.Entity<Post>().Property(x => x.Text).HasMaxLength(3000).IsRequired();
         modelBuilder.Entity<Post>().Property(x => x.Date).IsRequired();
         modelBuilder.Entity<Post>().Property(x => x.IsAnonymous).IsRequired();
-        modelBuilder.Entity<Post>().HasMany(x => x.Reactions)
-            .WithMany(x => x.Posts)
-            .UsingEntity(t => t.ToTable("PostsReactions"));
         modelBuilder.Entity<Post>()
             .HasMany(x => x.Comments)
             .WithOne().HasForeignKey(x => x.PostId)

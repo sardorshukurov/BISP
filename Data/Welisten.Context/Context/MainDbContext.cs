@@ -11,7 +11,6 @@ public class MainDbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Topic> Topics { get; set; }
-    public DbSet<Reaction> Reactions { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostCount> PostCounts { get; set; }
     public DbSet<Mood> Moods { get; set; }

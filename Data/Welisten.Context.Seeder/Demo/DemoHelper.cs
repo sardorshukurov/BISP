@@ -23,13 +23,6 @@ public class DemoHelper
         //     PasswordHash = HashPassword("password") 
         // }
     ];
-    
-    public readonly IEnumerable<Reaction> Reactions = [
-        new Reaction
-        {
-            Type = ReactionType.Like
-        }
-    ];
 
     public readonly IEnumerable<Topic> Topics =
     [

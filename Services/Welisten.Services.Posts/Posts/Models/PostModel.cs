@@ -1,7 +1,5 @@
-using System.Text.Json.Serialization;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Welisten.Context.Context;
+using Newtonsoft.Json;
 using Welisten.Context.Entities;
 using Welisten.Services.Topics;
 
@@ -19,7 +17,6 @@ public class PostModel
     public UserDto? User { get; set; }
     public required DateTime Date { get; set; }
     public required ICollection<string> Topics { get; set; }
-    public required ICollection<ReactionDto> Reactions { get; set; }
     public int CommentCount { get; set; }
     public int LikeCount { get; set; }
 }
@@ -29,7 +26,6 @@ public class PostModelProfile : Profile
     public PostModelProfile()
     {
         CreateMap<User, UserDto>();
-        CreateMap<Reaction, ReactionDto>();
         CreateMap<Topic, TopicModel>();
 
         CreateMap<Post, PostModel>()
@@ -43,8 +39,6 @@ public class PostModelProfile : Profile
                 opt.MapFrom(src => src.PostCount.LikeCount))
             .ForMember(dest => dest.User, opt => 
                 opt.MapFrom<PostUserResolver>())
-            .ForMember(dest => dest.Reactions, opt => 
-                opt.MapFrom<PostReactionsResolver>())
             .ForMember(dest => dest.Topics, opt =>
                 opt.MapFrom<PostTopicsResolver>());
     }
@@ -54,14 +48,6 @@ public class PostModelProfile : Profile
         public UserDto? Resolve(Post source, PostModel destination, UserDto? member, ResolutionContext context)
         {
             return source.IsAnonymous ? null : context.Mapper.Map<UserDto>(source.User);
-        }
-    }
-
-    private class PostReactionsResolver : IValueResolver<Post, PostModel, ICollection<ReactionDto>>
-    {
-        public ICollection<ReactionDto> Resolve(Post source, PostModel destination, ICollection<ReactionDto> member, ResolutionContext context)
-        {
-            return context.Mapper.Map<ICollection<ReactionDto>>(source.Reactions);
         }
     }
     

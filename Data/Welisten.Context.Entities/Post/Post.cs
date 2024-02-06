@@ -16,7 +16,6 @@ public class Post : BaseEntity
     public virtual User User { get; set; }
     
     public virtual required PostCount PostCount { get; set; }
-    public virtual required ICollection<Reaction> Reactions { get; set; }
     public virtual ICollection<Comment>? Comments { get; set; }
     public virtual ICollection<Topic> Topics { get; set; }
 }

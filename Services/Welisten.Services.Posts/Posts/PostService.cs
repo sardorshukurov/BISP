@@ -39,7 +39,6 @@ public class PostService : IPostService
         var posts = await context.Posts
             .Include(x => x.User)
             .Include(x => x.PostCount)
-            .Include(x => x.Reactions)
             .Include(x => x.Topics)
             .ToListAsync();
         
@@ -55,7 +54,6 @@ public class PostService : IPostService
         var post = await context.Posts
             .Include(x => x.User)
             .Include(x => x.PostCount)
-            .Include(x => x.Reactions)
             .Include(x => x.Topics)
             .FirstOrDefaultAsync(x => x.Uid == id);
 
@@ -127,8 +125,13 @@ public class PostService : IPostService
             post.Title = model.Title;
             post.Text = model.Text;
             post.IsAnonymous = model.IsAnonymous;
-            post.Topics = _mapper.Map<ICollection<Topic>>(model.Topics);
+            
+            post.Topics = await context.Topics
+                .Where(t => model.Topics.Contains(t.Uid))
+                .ToListAsync();
 
+            context.AttachRange(post.Topics);
+            
             await context.SaveChangesAsync();
         }
         catch (Exception e)

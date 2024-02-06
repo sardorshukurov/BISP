@@ -13,7 +13,7 @@ public class UpdatePostModel
     public required string Title { get; set; }
     public required string Text { get; set; }
     public required bool IsAnonymous { get; set; }
-    public required ICollection<TopicModel> Topics { get; set; }
+    public required ICollection<Guid> Topics { get; set; }
 }
 
 public class UpdatePostModelProfile : Profile
@@ -27,9 +27,23 @@ public class UpdatePostModelProfile : Profile
     
     private class PostTopicsResolver : IValueResolver<UpdatePostModel, Post, ICollection<Topic>>
     {
-        public ICollection<Topic> Resolve(UpdatePostModel source, Post destination, ICollection<Topic> member, ResolutionContext context)
+        private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
+
+        public PostTopicsResolver(IDbContextFactory<MainDbContext> dbContextFactory)
         {
-            return context.Mapper.Map<ICollection<Topic>>(source.Topics);
+            _dbContextFactory = dbContextFactory;
+        }
+
+        public ICollection<Topic> Resolve(UpdatePostModel source, Post destination, ICollection<Topic> destMember, ResolutionContext context)
+        {
+            using var dbContext = _dbContextFactory.CreateDbContext();
+
+            // Fetch existing topics asynchronously by Uid
+            var existingTopics = dbContext.Topics
+                .Where(t => source.Topics.Contains(t.Uid))
+                .ToList();
+
+            return existingTopics;
         }
     }
 }
