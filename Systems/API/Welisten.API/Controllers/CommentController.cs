@@ -72,4 +72,25 @@ public class CommentController : ControllerBase
 
         return Unauthorized();
     }
+
+    [AllowAnonymous]
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetComments([FromRoute] Guid id)
+    {
+        try
+        {
+            var comments = await _commentService.GetCommentsById(id);
+            return Ok(comments);
+        }
+        catch (InvalidOperationException e)
+        {
+            _logger.Warning(e, "Post not found with ID: {Id}", id);
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Error occurred while fetching comments for post with ID: {Id}", id);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred. Please try again later.");
+        }
+    }
 }

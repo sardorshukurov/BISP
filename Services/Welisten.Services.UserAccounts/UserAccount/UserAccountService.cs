@@ -70,19 +70,28 @@ public class UserAccountService
     {
         await _registerValidator.CheckAsync(registerDto);
 
-        // Find user by email
-        var user = await _userManager.FindByEmailAsync(registerDto.Email);
-        if (user != null)
-            throw new ProcessException($"User account with email {registerDto.Email} already exists.");
+        // Check if username already exists
+        var existingUser = await _userManager.FindByNameAsync(registerDto.Name);
+        if (existingUser != null)
+        {
+            throw new ProcessException($"Username '{registerDto.Name}' is already taken.");
+        }
+
+        // Check if email already exists
+        var existingEmailUser = await _userManager.FindByEmailAsync(registerDto.Email);
+        if (existingEmailUser != null)
+        {
+            throw new ProcessException($"User account with email '{registerDto.Email}' already exists.");
+        }
 
         // Create user account
-        user = new User()
+        var user = new User()
         {
             Status = UserStatus.Active,
             FirstName =  registerDto.FirstName,
             LastName = registerDto.LastName,
             Name = registerDto.Name,
-            UserName = registerDto.Name,
+            UserName = registerDto.Name, // Set username
             Email = registerDto.Email,
             EmailConfirmed = true,
             PhoneNumber = null,
@@ -91,8 +100,10 @@ public class UserAccountService
 
         var result = await _userManager.CreateAsync(user, registerDto.Password);
         if (!result.Succeeded)
-            throw new ProcessException($"Creating user account is wrong. {string.Join(", ", result.Errors.Select(s => s.Description))}");
-         
+        {
+            throw new ProcessException($"Creating user account failed. {string.Join(", ", result.Errors.Select(s => s.Description))}");
+        }
+    
         return _mapper.Map<UserAccountModel>(user);
     }
 

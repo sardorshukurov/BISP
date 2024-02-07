@@ -22,12 +22,27 @@ public class CommentService : ICommentService
         _createValidator = createValidator;
         _mapper = mapper;
     }
-    
+
+    public async Task<List<CommentModel>> GetCommentsById(Guid postId)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var post = await context.Posts
+            .Include(p => p.Comments)
+            .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync(p => p.Uid == postId);
+
+        if (post == null)
+            throw new InvalidOperationException($"Post with ID {postId} not found.");
+        
+        return _mapper.Map<List<CommentModel>>(post.Comments);
+    }
+
     public async Task<CommentModel> Create(CreateCommentModel model, Guid userId)
     {
         await _createValidator.CheckAsync(model);
 
-        using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
 
         var comment = _mapper.Map<Comment>(model);
 
@@ -56,7 +71,7 @@ public class CommentService : ICommentService
     
     public async Task Delete(Guid id, Guid userId)
     {
-        using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
         var comment = await context.Comments.Where(x => x.Uid == id).FirstOrDefaultAsync();
 
         if (comment == null)
