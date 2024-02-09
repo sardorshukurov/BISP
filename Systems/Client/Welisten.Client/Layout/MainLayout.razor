@@ -1,16 +1,19 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<MudThemeProvider Theme="_welistenTheme"/>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<NavMenu/>
+@code {
+
+    private readonly MudTheme _welistenTheme = new MudTheme()
+    {
+        Palette = new PaletteLight()
+        {
+            Secondary = "#EFA9AE",
+            Primary = "#2B9EB3",
+            AppbarBackground = "#261132",
+            Background = "#F5F9E9"
+        }
+    };
+
+}

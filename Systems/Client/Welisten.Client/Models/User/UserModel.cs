@@ -1,8 +1,6 @@
-using Newtonsoft.Json;
+namespace Welisten.Client.Models.User;
 
-namespace Welisten.Context.Entities;
-
-public class UserDto
+public class UserModel
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
