@@ -14,8 +14,9 @@ public class Post : BaseEntity
 
     public Guid UserId { get; set; }
     public virtual User User { get; set; }
-    
-    public virtual required PostCount PostCount { get; set; }
+
+    public PostCount PostCount { get; set; } = null!;
     public virtual ICollection<Comment>? Comments { get; set; }
     public virtual ICollection<Topic> Topics { get; set; }
+    public virtual ICollection<Like> Likes { get; set; }
 }

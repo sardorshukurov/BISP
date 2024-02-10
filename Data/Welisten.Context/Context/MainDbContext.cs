@@ -16,6 +16,7 @@ public class MainDbContext
     public DbSet<Mood> Moods { get; set; }
     public DbSet<MoodType> MoodTypes { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Like> Likes { get; set; }
     
     public MainDbContext(DbContextOptions<MainDbContext> options) : base(options) { }
     protected override void OnModelCreating(ModelBuilder builder)
@@ -23,9 +24,10 @@ public class MainDbContext
         base.OnModelCreating(builder);
         
         builder.ConfigurePosts();
-        builder.ConfigurePostCounts(); 
+        //builder.ConfigurePostCounts(); 
         builder.ConfigureComments(); 
         builder.ConfigureTopics(); 
         builder.ConfigureUsers();
+        //builder.ConfigureLikes();
     }
 }

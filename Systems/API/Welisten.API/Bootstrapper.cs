@@ -1,5 +1,6 @@
 using Welisten.Context.Seeder;
 using Welisten.Services.Comments;
+using Welisten.Services.Likes;
 using Welisten.Services.Logger;
 using Welisten.Services.Posts;
 using Welisten.Services.Settings;
@@ -19,7 +20,8 @@ public static class Bootstrapper
             .AddDbSeeder(configuration)
             .AddPostService()
             .AddCommentService()
-            .AddUserAccountService();
+            .AddUserAccountService()
+            .AddLikeService()
             ;
 
         return service;

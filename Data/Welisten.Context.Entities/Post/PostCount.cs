@@ -1,13 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Welisten.Context.Entities.Common;
 
 namespace Welisten.Context.Entities;
 
-public class PostCount
+public class PostCount : BaseEntity
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-    public virtual required Post Post { get; set; }
+    public Post Post { get; set; } = null!;
     public int CommentCount { get; set; }
     public int LikeCount { get; set; }
 }

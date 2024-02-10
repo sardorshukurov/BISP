@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Welisten.Context.Context;
@@ -11,9 +12,11 @@ using Welisten.Context.Context;
 namespace Welisten.Context.Migrations.PgSql.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240210130508_UdpateLikeEntity")]
+    partial class UdpateLikeEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -316,8 +319,6 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
@@ -356,21 +357,17 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<int>("CommentCount")
                         .HasColumnType("integer");
 
                     b.Property<int>("LikeCount")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("Uid")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("Uid")
-                        .IsUnique();
-
-                    b.ToTable("PostCounts");
+                    b.ToTable("PostCounts", (string)null);
                 });
 
             modelBuilder.Entity("Welisten.Context.Entities.Topic", b =>
@@ -615,24 +612,21 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
             modelBuilder.Entity("Welisten.Context.Entities.Post", b =>
                 {
+                    b.HasOne("Welisten.Context.Entities.PostCount", "PostCount")
+                        .WithOne("Post")
+                        .HasForeignKey("Welisten.Context.Entities.Post", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Welisten.Context.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("PostCount");
+
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Welisten.Context.Entities.PostCount", b =>
-                {
-                    b.HasOne("Welisten.Context.Entities.Post", "Post")
-                        .WithOne("PostCount")
-                        .HasForeignKey("Welisten.Context.Entities.PostCount", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Welisten.Context.Entities.Mood", b =>
@@ -645,8 +639,11 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
+                });
 
-                    b.Navigation("PostCount")
+            modelBuilder.Entity("Welisten.Context.Entities.PostCount", b =>
+                {
+                    b.Navigation("Post")
                         .IsRequired();
                 });
 

@@ -20,13 +20,11 @@ namespace Welisten.API.Controllers;
 [Route("v{version:apiVersion}/[controller]")]
 public class PostController : ControllerBase
 {
-    private readonly IAppLogger _logger;
     private readonly IPostService _postService;
     private readonly IUserAccountService _userService;
     
-    public PostController(IAppLogger logger, IPostService postService, IUserAccountService userService)
+    public PostController(IPostService postService, IUserAccountService userService)
     {
-        _logger = logger;
         _postService = postService;
         _userService = userService;
     }
