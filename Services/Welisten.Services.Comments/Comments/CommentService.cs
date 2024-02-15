@@ -29,8 +29,8 @@ public class CommentService : ICommentService
 
         var post = await context.Posts
             .Include(p => p.Comments)
-            .ThenInclude(c => c.User)
-            .FirstOrDefaultAsync(p => p.Uid == postId);
+                .ThenInclude(c => c.User)
+            .SingleOrDefaultAsync(p => p.Uid == postId);
 
         if (post == null)
             throw new InvalidOperationException($"Post with ID {postId} not found.");
@@ -55,15 +55,20 @@ public class CommentService : ICommentService
             .Include(x => x.PostCount)
             .FirstOrDefaultAsync(x => comment.PostId == x.Id);
 
-        context.Entry(post.PostCount).State = EntityState.Modified;
-        post.PostCount.CommentCount += 1;
+        // Error handling for post not found
+        if (post == null)
+            throw new ProcessException($"Associated post not found for comment with ID: {comment.PostId}");
+        
+        post.PostCount.CommentCount++;
 
+        comment.User = await context.Users.FindAsync(userId);
+        
         // Add the comment to the context
         await context.Comments.AddAsync(comment);
 
         // Save changes
         await context.SaveChangesAsync();
-
+        
         var createdComment = _mapper.Map<CommentModel>(comment);
 
         return createdComment;
@@ -72,16 +77,27 @@ public class CommentService : ICommentService
     public async Task Delete(Guid id, Guid userId)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
-        var comment = await context.Comments.Where(x => x.Uid == id).FirstOrDefaultAsync();
 
+        // Retrieve the comment
+        var comment = await context.Comments.FirstOrDefaultAsync(x => x.Uid == id);
         if (comment == null)
-            throw new ProcessException($"Comment with ID: {id}. Not found");
+            throw new ProcessException($"Comment with ID: {id} not found");
 
+        // Check if the user is authorized to delete the comment
         if (comment.UserId != userId)
-            throw new AuthenticationException("Authentication failed");
-            
+            throw new AuthenticationException("You are not authorized to delete this comment");
+
+        // Retrieve the associated post and update comment count
+        var post = await context.Posts.Include(x => x.PostCount).FirstOrDefaultAsync(p => p.Id == comment.PostId);
+        if (post == null)
+            throw new ProcessException($"Associated post not found for comment with ID: {id}");
+
+        // Remove the comment
         context.Comments.Remove(comment);
 
+        context.Entry(post.PostCount).State = EntityState.Modified;
+        post.PostCount.CommentCount -= 1;
+        
         await context.SaveChangesAsync();
     }
 }

@@ -98,9 +98,10 @@ public class PostService : IPostService
 
         // Save changes to the database
         await context.SaveChangesAsync();
-
+        post.User = await context.Users.FirstAsync(u => u.Id == userId);
+        
         var createdPost = _mapper.Map<PostModel>(post);
-
+        
         return createdPost;
     }
 
