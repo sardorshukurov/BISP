@@ -13,5 +13,5 @@ public class User : IdentityUser<Guid>
     public string? LastName { get; set; } = string.Empty;
     public UserStatus Status { get; set; }
     public virtual ICollection<Topic>? Topics { get; set; }
-    public virtual ICollection<Mood>? Moods { get; set; }
+    public virtual ICollection<MoodRecord>? MoodRecords { get; set; }
 }

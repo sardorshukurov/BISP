@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Welisten.Context.Context;
@@ -11,9 +12,11 @@ using Welisten.Context.Context;
 namespace Welisten.Context.Migrations.PgSql.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240220081211_AddMoods")]
+    partial class AddMoods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("EventTypeMoodRecord", b =>
+            modelBuilder.Entity("EventMoodRecord", b =>
                 {
                     b.Property<int>("EventId")
                         .HasColumnType("integer");
@@ -237,6 +240,30 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.ToTable("Comments", (string)null);
                 });
 
+            modelBuilder.Entity("Welisten.Context.Entities.Event", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EventTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("Uid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventTypeId");
+
+                    b.HasIndex("Uid")
+                        .IsUnique();
+
+                    b.ToTable("Events", (string)null);
+                });
+
             modelBuilder.Entity("Welisten.Context.Entities.EventType", b =>
                 {
                     b.Property<int>("Id")
@@ -311,10 +338,15 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.Property<Guid>("Uid")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Uid")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Moods", (string)null);
                 });
@@ -519,9 +551,9 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("EventTypeMoodRecord", b =>
+            modelBuilder.Entity("EventMoodRecord", b =>
                 {
-                    b.HasOne("Welisten.Context.Entities.EventType", null)
+                    b.HasOne("Welisten.Context.Entities.Event", null)
                         .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -634,6 +666,17 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Welisten.Context.Entities.Event", b =>
+                {
+                    b.HasOne("Welisten.Context.Entities.EventType", "EventType")
+                        .WithMany()
+                        .HasForeignKey("EventTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EventType");
+                });
+
             modelBuilder.Entity("Welisten.Context.Entities.Like", b =>
                 {
                     b.HasOne("Welisten.Context.Entities.Post", "Post")
@@ -653,6 +696,13 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Welisten.Context.Entities.Mood", b =>
+                {
+                    b.HasOne("Welisten.Context.Entities.User", null)
+                        .WithMany("Moods")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("Welisten.Context.Entities.MoodRecord", b =>
                 {
                     b.HasOne("Welisten.Context.Entities.Mood", "Mood")
@@ -662,7 +712,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
                         .IsRequired();
 
                     b.HasOne("Welisten.Context.Entities.User", "User")
-                        .WithMany("MoodRecords")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -706,7 +756,7 @@ namespace Welisten.Context.Migrations.PgSql.Migrations
 
             modelBuilder.Entity("Welisten.Context.Entities.User", b =>
                 {
-                    b.Navigation("MoodRecords");
+                    b.Navigation("Moods");
                 });
 #pragma warning restore 612, 618
         }

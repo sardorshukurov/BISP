@@ -14,7 +14,8 @@ public class MainDbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostCount> PostCounts { get; set; }
     public DbSet<Mood> Moods { get; set; }
-    public DbSet<MoodType> MoodTypes { get; set; }
+    public DbSet<EventType> EventTypes { get; set; }
+    public DbSet<MoodRecord> MoodRecords { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Like> Likes { get; set; }
     
@@ -28,6 +29,8 @@ public class MainDbContext
         builder.ConfigureComments(); 
         builder.ConfigureTopics(); 
         builder.ConfigureUsers();
-        //builder.ConfigureLikes();
+        builder.ConfigureMoodRecords();
+        builder.ConfigureMoods();
+        builder.ConfigureEventTypes();
     }
 }

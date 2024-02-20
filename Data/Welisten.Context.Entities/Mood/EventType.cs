@@ -3,8 +3,8 @@ using Welisten.Context.Entities.Common;
 
 namespace Welisten.Context.Entities;
 
-public class MoodType : BaseEntity
+public class EventType : BaseEntity
 {
-    [MaxLength(50)]
+    [MaxLength(50)] 
     public required string Name{ get; set; }
 }

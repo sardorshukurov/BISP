@@ -5,11 +5,8 @@ namespace Welisten.Context.Entities;
 
 public class Mood : BaseEntity
 {
-    public Guid? UserId { get; set; }
-    public virtual User User { get; set; }
-    
-    public ICollection<int>? MoodTypeId { get; set; }
-    public virtual ICollection<MoodType>? MoodTypes { get; set; }
-    
-    public DateTime Date { get; set; } = DateTime.Now;
+    [MinLength(3), MaxLength(50)]
+    public required string Name { get; set; }
+    [MinLength(5), MaxLength(2048)]
+    public required string ImageLink { get; set; }
 }
