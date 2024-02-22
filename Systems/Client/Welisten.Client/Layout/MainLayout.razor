@@ -3,6 +3,13 @@
 <MudThemeProvider Theme="_welistenTheme"/>
 
 <NavMenu/>
+
+<MudLayout>
+    <MudMainContent Align="Center">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
 @code {
 
     private readonly MudTheme _welistenTheme = new MudTheme()
