@@ -1,14 +1,80 @@
 ﻿@page "/"
+@using Welisten.Client.Models.Post
+@using Welisten.Client.Pages.Posts.Services
+
+@inject IPostService PostService;
+@inject ISnackbar Snackbar
+
 @layout MainLayout
 
-<MudCard Width="50%" Square="false">
-    <MudCardContent>
-        <MudText Typo="Typo.h5">Old Paint</MudText>
-        <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
-        <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-    </MudCardActions>
-</MudCard>
+@foreach (var post in _posts)
+{
+    <MudCard Width="50%" Square="false" Style="margin-bottom:50px">
+        <MudCardContent Align="left">
+            <MudContainer Style="padding:0; display: flex; justify-content: space-between">
+                <MudText Typo="Typo.subtitle1">@post.User.Name</MudText>
+                <MudText Typo="Typo.subtitle1">@FormatDate(@post.Date.ToLocalTime())</MudText>
+            </MudContainer>
+            
+            <MudText Typo="Typo.h5">@post.Title</MudText>
+            <MudText Typo="Typo.body1">@post.Text</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Comment"/>@post.CommentCount</MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+
+
+@code{
+
+    private IEnumerable<PostModel> _posts = new List<PostModel>();
+
+    private async Task ReloadData()
+    {
+        _posts = await PostService.GetPosts();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await ReloadData();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+    
+    private string FormatDate(DateTime date)
+    {
+        var timeSpan = DateTime.Now - date;
+        
+        if (timeSpan.TotalMinutes < 60)
+        {
+            var minutes = (int)timeSpan.TotalMinutes;
+            return $"{minutes}m ago";
+        }
+        else if (timeSpan.TotalHours < 24)
+        {
+            var hours = (int)timeSpan.TotalHours;
+            return $"{hours}h ago";
+        }
+        else if (timeSpan.TotalDays < 7)
+        {
+            var days = (int)timeSpan.TotalDays;
+            return $"{days}d ago";
+        }
+        else if (timeSpan.TotalDays < 30)
+        {
+            var weeks = (int)(timeSpan.TotalDays / 7);
+            return $"{weeks}w ago";
+        }
+        else
+        {
+            return date.ToString("dd MMMM");
+        }
+    }
+}
