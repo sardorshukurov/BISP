@@ -64,45 +64,54 @@ public class PostService : IPostService
 
     public async Task<PostModel> Create(CreatePostModel model, Guid userId)
     {
-        await _createValidator.CheckAsync(model);
-
-        await using var context = await _dbContextFactory.CreateDbContextAsync();
-        
-        // Create a new Post entity
-        var post = _mapper.Map<Post>(model);
-
-        if (post.Date.Kind == DateTimeKind.Local)
-            post.Date = post.Date.ToUniversalTime();
-
-        // Create a new PostCount entity
-        var postCount = new PostCount
+        try
         {
-            Post = post
-        };
+            await _createValidator.CheckAsync(model);
 
-        // Associate the Post and PostCount entities
-        post.PostCount = postCount;
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+        
+            // Create a new Post entity
+            var post = _mapper.Map<Post>(model);
 
-        post.UserId = userId;
+            if (post.Date.Kind == DateTimeKind.Local)
+                post.Date = post.Date.ToUniversalTime();
 
-        // Fetch existing topics by Uid
-        post.Topics = await context.Topics
-            .Where(t => model.Topics.Contains(t.Uid))
-            .ToListAsync();
-        
-        context.AttachRange(post.Topics);
-        
-        // Add the entities to the context
-        await context.Posts.AddAsync(post);
-        await context.PostCounts.AddAsync(postCount);
+            // Create a new PostCount entity
+            var postCount = new PostCount
+            {
+                Post = post
+            };
 
-        // Save changes to the database
-        await context.SaveChangesAsync();
-        post.User = await context.Users.FirstAsync(u => u.Id == userId);
+            // Associate the Post and PostCount entities
+            post.PostCount = postCount;
+
+            post.UserId = userId;
+
+            // Fetch existing topics by Uid
+            post.Topics = await context.Topics
+                .Where(t => model.Topics.Contains(t.Uid))
+                .ToListAsync();
         
-        var createdPost = _mapper.Map<PostModel>(post);
+            context.AttachRange(post.Topics);
         
-        return createdPost;
+            // Add the entities to the context
+            await context.Posts.AddAsync(post);
+            await context.PostCounts.AddAsync(postCount);
+
+            // Save changes to the database
+            await context.SaveChangesAsync();
+            
+            post.User = await context.Users.FirstAsync(u => u.Id == userId);
+        
+            var createdPost = _mapper.Map<PostModel>(post);
+        
+            return createdPost;
+        }
+        catch (Exception e)
+        {
+            _logger.Error($"Error creating post. Error message: {e.Message}");
+            throw;
+        }
     }
 
     public async Task Update(Guid id, Guid userId, UpdatePostModel model)
@@ -116,7 +125,7 @@ public class PostService : IPostService
             var post = await context.Posts.FirstOrDefaultAsync(x => x.Uid == id);
 
             if (post == null)
-                throw new ProcessException($"Post with ID: {id}. Not found");
+                throw new ProcessException($"Post with ID: {id} not found");
 
             if (post.UserId != userId)
                 throw new AuthenticationException("Authentication failed");
@@ -137,7 +146,7 @@ public class PostService : IPostService
         }
         catch (Exception e)
         {
-            _logger.Error($"Error updating post with Id: {id}. Error message: {e}");
+            _logger.Error($"Error updating post with ID: {id}. Error message: {e.Message}");
             throw;
         }
     }
