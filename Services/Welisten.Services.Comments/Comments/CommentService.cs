@@ -59,9 +59,12 @@ public class CommentService : ICommentService
         if (post == null)
             throw new ProcessException($"Associated post not found for comment with ID: {comment.PostId}");
         
+        context.Entry(post.PostCount).State = EntityState.Modified;
         post.PostCount.CommentCount++;
 
         comment.User = await context.Users.FindAsync(userId);
+
+        context.Attach(comment.User);
         
         // Add the comment to the context
         await context.Comments.AddAsync(comment);
@@ -96,7 +99,7 @@ public class CommentService : ICommentService
         context.Comments.Remove(comment);
 
         context.Entry(post.PostCount).State = EntityState.Modified;
-        post.PostCount.CommentCount -= 1;
+        post.PostCount.CommentCount--;
         
         await context.SaveChangesAsync();
     }
