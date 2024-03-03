@@ -1,9 +1,9 @@
+using System.Reflection;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Reflection;
-using Asp.Versioning.ApiExplorer;
 using Welisten.Services.Settings.AppSettings;
 
 namespace Welisten.API.Configuration;
@@ -16,12 +16,13 @@ public static class SwaggerConfiguration
     private const string AppTitle = "Welisten API";
 
     /// <summary>
-    /// Add OpenAPI to API
+    ///     Add OpenAPI to API
     /// </summary>
     /// <param name="services">Services collection</param>
     /// <param name="mainSettings"></param>
     /// <param name="swaggerSettings"></param>
-    public static IServiceCollection AddAppSwagger(this IServiceCollection services, MainSettings mainSettings, SwaggerSettings swaggerSettings)
+    public static IServiceCollection AddAppSwagger(this IServiceCollection services, MainSettings mainSettings,
+        SwaggerSettings swaggerSettings)
     {
         if (!swaggerSettings.Enabled)
             return services;
@@ -65,7 +66,7 @@ public static class SwaggerConfiguration
                 {
                     Password = new OpenApiOAuthFlow
                     {
-                        TokenUrl = new Uri($"{mainSettings.PublicUrl}/connect/token"),
+                        TokenUrl = new Uri($"{mainSettings.PublicUrl}/connect/token")
                         //Scopes = new Dictionary<string, string>
                         //{
                         //    { "Admin", "Admin scope" },
@@ -113,7 +114,7 @@ public static class SwaggerConfiguration
 
 
     /// <summary>
-    /// Start OpenAPI UI
+    ///     Start OpenAPI UI
     /// </summary>
     /// <param name="app">Web application</param>
     public static void UseAppSwagger(this WebApplication app)

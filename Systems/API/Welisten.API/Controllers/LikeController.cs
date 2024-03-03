@@ -29,8 +29,7 @@ public class LikeController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
-        {
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
             try
             {
                 await _likeService.LikeUnlike(userId, postId);
@@ -44,7 +43,6 @@ public class LikeController : ControllerBase
             {
                 return BadRequest();
             }
-        }
 
         return Unauthorized();
     }

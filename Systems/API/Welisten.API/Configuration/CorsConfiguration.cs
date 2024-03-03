@@ -3,12 +3,12 @@ using Welisten.Services.Settings.AppSettings;
 namespace Welisten.API.Configuration;
 
 /// <summary>
-/// CORS configuration
+///     CORS configuration
 /// </summary>
 public static class CorsConfiguration
 {
     /// <summary>
-    /// Add CORS
+    ///     Add CORS
     /// </summary>
     /// <param name="services">Services collection</param>
     public static IServiceCollection AddAppCors(this IServiceCollection services)
@@ -19,7 +19,7 @@ public static class CorsConfiguration
     }
 
     /// <summary>
-    /// Use service
+    ///     Use service
     /// </summary>
     /// <param name="app">Application</param>
     public static void UseAppCors(this WebApplication app)

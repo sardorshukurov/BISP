@@ -9,43 +9,44 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
-        <PackageReference Include="DNCB.Serilog.Enrichers.CorrelationId" Version="8.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0"/>
+        <PackageReference Include="DNCB.Serilog.Enrichers.CorrelationId" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.1-dev-10370" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.1"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.1-dev-10370"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.MSSQL\Welisten.Context.Migrations.MSSQL.csproj" />
-      <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.MySql\Welisten.Context.Migrations.MySql.csproj" />
-      <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.PgSql\Welisten.Context.Migrations.PgSql.csproj" />
-      <ProjectReference Include="..\..\..\Data\Welisten.Context.Seeder\Welisten.Context.Seeder.csproj" />
-      <ProjectReference Include="..\..\..\Data\Welisten.Context\Welisten.Context.csproj" />
-      <ProjectReference Include="..\..\..\Services\Welisten.Services.Comments\Welisten.Services.Comments.csproj" />
-      <ProjectReference Include="..\..\..\Services\Welisten.Services.Likes\Welisten.Services.Likes.csproj" />
-      <ProjectReference Include="..\..\..\Services\Welisten.Services.Logger\Welisten.Services.Logger.csproj" />
-      <ProjectReference Include="..\..\..\Services\Welisten.Services.Posts\Welisten.Services.Posts.csproj" />
-      <ProjectReference Include="..\..\..\Services\Welisten.Services.Settings\Welisten.Services.Settings.csproj" />
-      <ProjectReference Include="..\..\..\Services\Welisten.Services.UserAccounts\Welisten.Services.UserAccounts.csproj" />
+        <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.MSSQL\Welisten.Context.Migrations.MSSQL.csproj"/>
+        <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.MySql\Welisten.Context.Migrations.MySql.csproj"/>
+        <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.PgSql\Welisten.Context.Migrations.PgSql.csproj"/>
+        <ProjectReference Include="..\..\..\Data\Welisten.Context.Seeder\Welisten.Context.Seeder.csproj"/>
+        <ProjectReference Include="..\..\..\Data\Welisten.Context\Welisten.Context.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.Comments\Welisten.Services.Comments.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.Likes\Welisten.Services.Likes.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.Logger\Welisten.Services.Logger.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.Posts\Welisten.Services.Posts.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.Settings\Welisten.Services.Settings.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.UserAccounts\Welisten.Services.UserAccounts.csproj"/>
     </ItemGroup>
 
 </Project>

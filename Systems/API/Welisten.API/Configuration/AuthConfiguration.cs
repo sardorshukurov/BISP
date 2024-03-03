@@ -1,14 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Welisten.Common.Security;
 using Welisten.Common.Settings;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
-using Welisten.Services.Logger.Logger;
-using Welisten.Services.Settings.AppSettings;
 
 namespace Welisten.API.Configuration;
 
@@ -16,7 +13,6 @@ public static class AuthConfiguration
 {
     public static IServiceCollection AddAppAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        
         services
             .AddIdentity<User, IdentityRole<Guid>>(opt =>
             {
@@ -40,7 +36,7 @@ public static class AuthConfiguration
             var settings = CommonSettings.Load<JwtConfig>("JwtConfig", configuration);
             var key = Encoding.ASCII.GetBytes(settings.Secret);
             jwt.SaveToken = true;
-            jwt.TokenValidationParameters = new TokenValidationParameters()
+            jwt.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),

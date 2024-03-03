@@ -1,4 +1,4 @@
- using Welisten.API;
+using Welisten.API;
 using Welisten.API.Configuration;
 using Welisten.Common.Security;
 using Welisten.Common.Settings;
@@ -6,7 +6,6 @@ using Welisten.Context;
 using Welisten.Context.Seeder;
 using Welisten.Context.Setup;
 using Welisten.Services.Logger.Logger;
-using Welisten.Services.Posts;
 using Welisten.Services.Settings.AppSettings;
 
 var mainSettings = CommonSettings.Load<MainSettings>("Main");

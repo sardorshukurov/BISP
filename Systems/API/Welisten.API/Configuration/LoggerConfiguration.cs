@@ -7,12 +7,12 @@ using LogLevel = Welisten.Services.Settings.AppSettings.LogLevel;
 namespace Welisten.API.Configuration;
 
 /// <summary>
-/// Logger Configuration
+///     Logger Configuration
 /// </summary>
 public static class LoggerConfiguration
 {
     /// <summary>
-    /// Add logger
+    ///     Add logger
     /// </summary>
     public static void AddAppLogger(this WebApplicationBuilder builder, MainSettings mainSettings,
         LogSettings logSettings)
@@ -26,7 +26,7 @@ public static class LoggerConfiguration
 
         // Log level
         if (!Enum.TryParse(logSettings.Level, out LogLevel level)) level = LogLevel.Information;
-        
+
         var serilogLevel = level switch
         {
             LogLevel.Verbose => LogEventLevel.Verbose,
@@ -75,8 +75,8 @@ public static class LoggerConfiguration
 
 
             if (!int.TryParse(logSettings.FileRollingSize, out var size)) size = 5242880;
-            
-            var fileName = $"_.log";
+
+            var fileName = "_.log";
 
             loggerConfiguration.WriteTo.File($"logs/{fileName}",
                 serilogLevel,

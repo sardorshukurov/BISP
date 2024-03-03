@@ -3,12 +3,12 @@ using Asp.Versioning;
 namespace Welisten.API.Configuration;
 
 /// <summary>
-/// Versioning configuration
+///     Versioning configuration
 /// </summary>
 public static class VersioningConfiguration
 {
     /// <summary>
-    /// Add version support for API
+    ///     Add version support for API
     /// </summary>
     /// <param name="services">Services collection</param>
     public static IServiceCollection AddAppVersioning(this IServiceCollection services)

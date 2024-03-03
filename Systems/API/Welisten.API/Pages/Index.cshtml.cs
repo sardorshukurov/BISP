@@ -8,15 +8,12 @@ namespace Welisten.API.Pages;
 
 public class IndexModel(SwaggerSettings settings) : PageModel
 {
-    [BindProperty]
-    public bool OpenApiEnabled => settings.Enabled;
+    [BindProperty] public bool OpenApiEnabled => settings.Enabled;
 
-    [BindProperty]
-    public string Version => Assembly.GetExecutingAssembly().GetAssemblyVersion()!;
+    [BindProperty] public string Version => Assembly.GetExecutingAssembly().GetAssemblyVersion()!;
 
 
     public void OnGet()
     {
-
     }
 }

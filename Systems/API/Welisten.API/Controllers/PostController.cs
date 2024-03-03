@@ -2,12 +2,8 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Welisten.Common.Exceptions;
-using Welisten.Context.Context;
-using Welisten.Services.Logger.Logger;
 using Welisten.Services.Posts;
 using Welisten.Services.UserAccounts;
 
@@ -22,13 +18,13 @@ public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
     private readonly IUserAccountService _userService;
-    
+
     public PostController(IPostService postService, IUserAccountService userService)
     {
         _postService = postService;
         _userService = userService;
     }
-    
+
     [AllowAnonymous]
     [HttpGet("")]
     public async Task<IEnumerable<PostModel>> GetAll()
@@ -37,13 +33,13 @@ public class PostController : ControllerBase
 
         return result;
     }
-    
+
     [AllowAnonymous]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var result = await _postService.GetById(id);
-        
+
         if (result == null)
             return NotFound();
 
@@ -56,17 +52,18 @@ public class PostController : ControllerBase
     {
         if (!await _userService.Exists(User))
             return Unauthorized();
-        
+
         if (await _userService.IsExpired(User))
             return Unauthorized();
-        
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
         {
             var result = await _postService.Create(request, userId);
             return Ok(result);
         }
+
         return Unauthorized();
     }
 
@@ -75,9 +72,8 @@ public class PostController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
-        {
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
             try
             {
                 await _postService.Delete(id, userId);
@@ -95,7 +91,6 @@ public class PostController : ControllerBase
             {
                 return BadRequest();
             }
-        }
 
         return Unauthorized();
     }
@@ -106,8 +101,7 @@ public class PostController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
-        {
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
             try
             {
                 await _postService.Update(id, userId, request);
@@ -125,8 +119,7 @@ public class PostController : ControllerBase
             {
                 return BadRequest();
             }
-        }
-        
+
         return Unauthorized();
     }
 }

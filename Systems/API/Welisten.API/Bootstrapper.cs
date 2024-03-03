@@ -10,7 +10,7 @@ namespace Welisten.API;
 
 public static class Bootstrapper
 {
-    public static IServiceCollection RegisterServices (this IServiceCollection service, IConfiguration configuration)
+    public static IServiceCollection RegisterServices(this IServiceCollection service, IConfiguration configuration)
     {
         service
             .AddMainSettings(configuration)

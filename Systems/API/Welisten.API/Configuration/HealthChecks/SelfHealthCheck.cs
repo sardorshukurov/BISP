@@ -5,7 +5,7 @@ namespace Welisten.API.Configuration.HealthChecks;
 
 public class SelfHealthCheck : IHealthCheck
 {
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, 
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
         var assembly = Assembly.Load("Welisten.API");

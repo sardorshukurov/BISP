@@ -17,10 +17,10 @@ namespace Welisten.API.Controllers;
 [Route("v{version:apiVersion}/[controller]")]
 public class CommentController : ControllerBase
 {
-    private readonly IAppLogger _logger;
     private readonly ICommentService _commentService;
+    private readonly IAppLogger _logger;
     private readonly IUserAccountService _userService;
-    
+
     public CommentController(IAppLogger logger, ICommentService commentService, IUserAccountService userService)
     {
         _logger = logger;
@@ -33,13 +33,13 @@ public class CommentController : ControllerBase
     {
         if (!await _userService.Exists(User))
             return Unauthorized();
-        
+
         if (await _userService.IsExpired(User))
             return Unauthorized();
-        
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
         {
             var result = await _commentService.Create(request, userId);
             return Ok(result);
@@ -53,8 +53,7 @@ public class CommentController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
-        {
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
             try
             {
                 await _commentService.Delete(id, userId);
@@ -68,7 +67,6 @@ public class CommentController : ControllerBase
             {
                 return Unauthorized();
             }
-        }
 
         return Unauthorized();
     }
@@ -90,7 +88,8 @@ public class CommentController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e, "Error occurred while fetching comments for post with ID: {Id}", id);
-            return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred. Please try again later.");
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "An unexpected error occurred. Please try again later.");
         }
     }
 }

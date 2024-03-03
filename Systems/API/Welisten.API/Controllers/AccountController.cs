@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using AutoMapper;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Welisten.Common.Exceptions;
 using Welisten.Common.Responses;
@@ -14,12 +13,12 @@ namespace Welisten.API.Controllers;
 [Route("v{version:apiVersion}/[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly ILogger<AccountController> _logger;
+    private readonly IMapper _mapper;
     private readonly IUserAccountService _userAccountService;
 
     public AccountController(IMapper mapper, ILogger<AccountController> logger, IUserAccountService userAccountService)
-    { 
+    {
         _mapper = mapper;
         _logger = logger;
         _userAccountService = userAccountService;
@@ -50,7 +49,7 @@ public class AccountController : ControllerBase
     {
         try
         {
-            string token = await _userAccountService.Login(request);
+            var token = await _userAccountService.Login(request);
             return Ok(new LoginRequestResponse
             {
                 Token = token
@@ -69,5 +68,4 @@ public class AccountController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
 }
