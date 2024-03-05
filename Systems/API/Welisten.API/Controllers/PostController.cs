@@ -29,9 +29,7 @@ public class PostController : ControllerBase
     [HttpGet("")]
     public async Task<IEnumerable<PostModel>> GetAll()
     {
-        var result = await _postService.GetAll();
-
-        return result;
+        return await _postService.GetAll();
     }
 
     [AllowAnonymous]

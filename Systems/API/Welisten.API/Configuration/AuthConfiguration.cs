@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,8 @@ public static class AuthConfiguration
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
             })
+            .AddRoles<IdentityRole<Guid>>()
+            .AddRoleManager<RoleManager<IdentityRole<Guid>>>()
             .AddEntityFrameworkStores<MainDbContext>()
             .AddUserManager<UserManager<User>>()
             .AddDefaultTokenProviders();
@@ -45,7 +48,8 @@ public static class AuthConfiguration
                 RequireExpirationTime = false,
                 ValidateLifetime = true,
                 ValidIssuer = settings.Issuer,
-                ValidAudience = settings.Audience
+                ValidAudience = settings.Audience,
+                RoleClaimType = ClaimTypes.Role
             };
         });
 

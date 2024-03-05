@@ -8,7 +8,7 @@ namespace Welisten.Services.Topics;
 
 public class TopicModel
 {
-    public required Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public required string Type { get; set; }
 }
 

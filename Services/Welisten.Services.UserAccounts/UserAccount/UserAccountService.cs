@@ -121,28 +121,38 @@ public class UserAccountService
         if (!isPasswordValid)
             throw new ProcessException($"Either email or password is wrong. Try again");
         
-        var token = GenerateJwtToken(existingUser);
+        var token = GenerateJwtToken(existingUser).Result;
         return token;
     }
     
-    private string GenerateJwtToken(User user)
+    private async Task<string> GenerateJwtToken(User user)
     {
         var jwtTokenHandler = new JwtSecurityTokenHandler();
 
         var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
 
+        var claims = new List<Claim>
+        {
+            new Claim("Id", user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Name),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iss, _jwtConfig.Issuer),
+            new Claim(JwtRegisteredClaimNames.Aud, _jwtConfig.Audience),
+        };
+
+        // Fetch user roles
+        var userRoles = await _userManager.GetRolesAsync(user);
+        if (userRoles.Any())
+        {
+            // Add the user's role as a claim
+            claims.Add(new Claim(ClaimTypes.Role, userRoles.First()));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim("Id", user.Id.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Name),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iss, _jwtConfig.Issuer),
-                new Claim(JwtRegisteredClaimNames.Aud, _jwtConfig.Audience)
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.Now.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha512)
@@ -152,4 +162,5 @@ public class UserAccountService
         var jwtToken = jwtTokenHandler.WriteToken(token);
         return jwtToken;
     }
+
 }

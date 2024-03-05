@@ -4,6 +4,7 @@ using Welisten.Services.Likes;
 using Welisten.Services.Logger;
 using Welisten.Services.Posts;
 using Welisten.Services.Settings;
+using Welisten.Services.Topics;
 using Welisten.Services.UserAccounts;
 
 namespace Welisten.API;
@@ -22,6 +23,7 @@ public static class Bootstrapper
             .AddCommentService()
             .AddUserAccountService()
             .AddLikeService()
+            .AddTopicService()
             ;
 
         return service;
