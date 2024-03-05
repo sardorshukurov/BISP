@@ -30,7 +30,7 @@ public class TopicController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPost("")]
-    public async Task<IActionResult> Create([FromBody]string type)
+    public async Task<IActionResult> Create([FromBody] string type)
     {
         try
         {
@@ -45,7 +45,7 @@ public class TopicController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, string type)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] string type)
     {
         try
         {

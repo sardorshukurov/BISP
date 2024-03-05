@@ -28,9 +28,7 @@ public class TopicModelProfile : Profile
             .ForMember(dest => dest.Id, opt =>
                 opt.MapFrom(src => src.Uid))
             .ForMember(dest => dest.Type, opt =>
-                opt.MapFrom(src => src.Type))
-            .ForMember(dest => dest.Id, opt =>
-                opt.Ignore());
+                opt.MapFrom(src => src.Type));
     }
 }
 

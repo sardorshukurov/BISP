@@ -39,7 +39,7 @@ public class TopicService : ITopicService
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var topic = _mapper.Map<Topic>(new TopicModel { Id = new Guid(), Type = typeName });
+            var topic = _mapper.Map<Topic>(new TopicModel { Id = Guid.NewGuid(), Type = typeName });
 
             await context.Topics.AddAsync(topic);
             await context.SaveChangesAsync();
