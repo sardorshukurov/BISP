@@ -30,7 +30,7 @@ public class TopicController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPost("")]
-    public async Task<IActionResult> Create(string type)
+    public async Task<IActionResult> Create([FromBody]string type)
     {
         try
         {
