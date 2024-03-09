@@ -8,7 +8,7 @@ using Welisten.Services.Settings.AppSettings;
 
 namespace Welisten.API.Configuration;
 
-// <summary>
+/// <summary>
 /// Swagger configuration
 /// </summary>
 public static class SwaggerConfiguration
@@ -136,7 +136,7 @@ public static class SwaggerConfiguration
                 provider.ApiVersionDescriptions.ToList().ForEach(
                     description =>
                         options.SwaggerEndpoint(
-                            mainSettings.PublicUrl + $"/docs/{description.GroupName}/api.yaml",
+                            mainSettings!.PublicUrl + $"/docs/{description.GroupName}/api.yaml",
                             description.GroupName.ToUpperInvariant())
                 );
 

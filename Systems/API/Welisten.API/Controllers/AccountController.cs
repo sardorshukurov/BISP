@@ -26,7 +26,7 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto request)
+    public async Task<IActionResult> Register([FromForm] RegisterDto request)
     {
         try
         {
@@ -45,7 +45,7 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto request)
+    public async Task<IActionResult> Login([FromForm] LoginDto request)
     {
         try
         {

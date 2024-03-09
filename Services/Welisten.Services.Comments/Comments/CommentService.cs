@@ -28,7 +28,7 @@ public class CommentService : ICommentService
         await using var context = await _dbContextFactory.CreateDbContextAsync();
 
         var post = await context.Posts
-            .Include(p => p.Comments)
+            .Include(p => p.Comments)!
                 .ThenInclude(c => c.User)
             .SingleOrDefaultAsync(p => p.Uid == postId);
 

@@ -34,7 +34,7 @@ public class CommentController : ControllerBase
         if (!await _userService.Exists(User))
             return Unauthorized();
 
-        if (await _userService.IsExpired(User))
+        if (_userService.IsExpired(User))
             return Unauthorized();
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
