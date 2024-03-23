@@ -9,7 +9,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<MainDbCont
 {
     public MainDbContext CreateDbContext(string[] args)
     {
-        var provider = (args?[0] ?? $"{DbType.MSSQL}").ToLower();
+        var provider = (args?[0] ?? $"{DbType.PgSql}").ToLower();
 
         var configuration = new ConfigurationBuilder()
             .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.context.json"), false)
@@ -18,12 +18,12 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<MainDbCont
         var connectionString = configuration.GetConnectionString(provider)!;
 
         DbType dbType;
-        if (provider.Equals($"{DbType.MSSQL}".ToLower()))
-            dbType = DbType.MSSQL;
-        else if (provider.Equals($"{DbType.PgSql}".ToLower()))
+        // if (provider.Equals($"{DbType.MSSQL}".ToLower()))
+        //     dbType = DbType.MSSQL;
+        if (provider.Equals($"{DbType.PgSql}".ToLower()))
             dbType = DbType.PgSql;
-        else if (provider.Equals($"{DbType.MySql}".ToLower()))
-            dbType = DbType.MySql;
+        // else if (provider.Equals($"{DbType.MySql}".ToLower()))
+        //     dbType = DbType.MySql;
         else
             throw new Exception($"Unsupported provider: {provider}");
 

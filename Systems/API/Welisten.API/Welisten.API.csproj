@@ -36,8 +36,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.MSSQL\Welisten.Context.Migrations.MSSQL.csproj"/>
-        <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.MySql\Welisten.Context.Migrations.MySql.csproj"/>
         <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.PgSql\Welisten.Context.Migrations.PgSql.csproj"/>
         <ProjectReference Include="..\..\..\Data\Welisten.Context.Seeder\Welisten.Context.Seeder.csproj"/>
         <ProjectReference Include="..\..\..\Data\Welisten.Context\Welisten.Context.csproj"/>

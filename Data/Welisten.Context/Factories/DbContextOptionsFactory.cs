@@ -26,14 +26,14 @@ public static class DbContextOptionsFactory
         {
             switch (dbType)
             {
-                case DbType.MSSQL:
-                    builder.UseSqlServer(connectionString,
-                        opts => opts
-                            .CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)
-                            .MigrationsHistoryTable("_migrations")
-                            .MigrationsAssembly($"{MigrationProjectPrefix}{DbType.MSSQL}")
-                    );
-                    break;
+                // case DbType.MSSQL:
+                //     builder.UseSqlServer(connectionString,
+                //         opts => opts
+                //             .CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)
+                //             .MigrationsHistoryTable("_migrations")
+                //             .MigrationsAssembly($"{MigrationProjectPrefix}{DbType.MSSQL}")
+                //     );
+                //     break;
 
                 case DbType.PgSql:
                     builder.UseNpgsql(connectionString,
@@ -44,15 +44,15 @@ public static class DbContextOptionsFactory
                     );
                     break;
 
-                case DbType.MySql:
-                    builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-                        opts => opts
-                            .CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)
-                            .SchemaBehavior(MySqlSchemaBehavior.Ignore)
-                            .MigrationsHistoryTable("_migrations")
-                            .MigrationsAssembly($"{MigrationProjectPrefix}{DbType.MySql}")
-                    );
-                    break;
+                // case DbType.MySql:
+                //     builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                //         opts => opts
+                //             .CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)
+                //             .SchemaBehavior(MySqlSchemaBehavior.Ignore)
+                //             .MigrationsHistoryTable("_migrations")
+                //             .MigrationsAssembly($"{MigrationProjectPrefix}{DbType.MySql}")
+                //     );
+                //     break;
             }
 
             if (detailedLogging)
