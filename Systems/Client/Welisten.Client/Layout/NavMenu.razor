@@ -1,13 +1,18 @@
-﻿<MudAppBar Fixed="false" Dense="true">
-    <MudIconButton href="/">
-        <MudImage Src="/icons/logo.png" Alt="Logo" Width="100"></MudImage>
-    </MudIconButton>
-    <MudSpacer/>
-    <MudButtonGroup  OverrideStyles="false">
-        <MudButton Href="/register" Color="Color.Secondary" Variant="Variant.Text">Sign Up</MudButton>
-        <MudButton Href="/login" Color="Color.Primary" Variant="Variant.Filled">Log in</MudButton>
-    </MudButtonGroup>
-</MudAppBar>
+﻿<CascadingAuthenticationState>
+    <MudAppBar Fixed="false" Dense="true">
+        <MudIconButton href="/">
+            <MudImage Src="/icons/logo.png" Alt="Logo" Width="100"></MudImage>
+        </MudIconButton>
+        <MudSpacer/>
+        <NotAuthorized>
+            <MudButtonGroup  OverrideStyles="false">
+                    <MudButton Href="/register" Color="Color.Secondary" Variant="Variant.Text">Sign Up</MudButton>
+                    <MudButton Href="/login" Color="Color.Primary" Variant="Variant.Filled">Log in</MudButton>
+                </MudButtonGroup>
+        </NotAuthorized>
+    </MudAppBar>
+</CascadingAuthenticationState>
+
 
 @code{
     private const string Logo = "../wwwroot/icons/logo.png";
