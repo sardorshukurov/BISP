@@ -1,0 +1,13 @@
+version: '1.0'
+
+services:
+  welisten_postgresql:
+    image: postgres:16.1
+
+  welisten_api:
+    image: ${DOCKER_REGISTRY-}welistenapi
+    build:
+      context: .
+      dockerfile: Systems/API/Welisten.API/Dockerfile
+    depends_on:
+      - welisten_postgresql

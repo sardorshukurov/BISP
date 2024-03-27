@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Welisten.Client.Models.Post
 @using Welisten.Client.Pages.Posts.Services
+@using Welisten.Common.Extensions
 
 @inject IPostService PostService;
 @inject ISnackbar Snackbar
@@ -13,7 +14,7 @@
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between">
                 <MudText Typo="Typo.subtitle1">@post.User.Name</MudText>
-                <MudText Typo="Typo.subtitle1">@FormatDate(@post.Date.ToLocalTime())</MudText>
+                <MudText Typo="Typo.subtitle1">@post.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
             
             <MudText Typo="Typo.h5">@post.Title</MudText>
@@ -45,36 +46,6 @@
         catch (Exception ex)
         {
             Snackbar.Add(ex.Message, Severity.Error);
-        }
-    }
-    
-    private string FormatDate(DateTime date)
-    {
-        var timeSpan = DateTime.Now - date;
-        
-        if (timeSpan.TotalMinutes < 60)
-        {
-            var minutes = (int)timeSpan.TotalMinutes;
-            return $"{minutes}m ago";
-        }
-        else if (timeSpan.TotalHours < 24)
-        {
-            var hours = (int)timeSpan.TotalHours;
-            return $"{hours}h ago";
-        }
-        else if (timeSpan.TotalDays < 7)
-        {
-            var days = (int)timeSpan.TotalDays;
-            return $"{days}d ago";
-        }
-        else if (timeSpan.TotalDays < 30)
-        {
-            var weeks = (int)(timeSpan.TotalDays / 7);
-            return $"{weeks}w ago";
-        }
-        else
-        {
-            return date.ToString("dd MMMM");
         }
     }
 }

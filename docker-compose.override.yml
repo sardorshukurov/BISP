@@ -1,0 +1,27 @@
+version: '1.0'
+
+services:
+  welisten_postgresql:
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "45432:5432"
+    networks:
+      - shared_welisten
+    volumes:
+      - ~/.docker-conf/postgresql/data/:/var/lib/postgresql/data
+
+  welisten_api:
+    ports:
+      - "10000:8080"
+    networks:
+      - shared_welisten
+    env_file:
+      - env.api
+    
+networks:
+  shared_welisten:
+    name: welisten
+    driver: bridge
