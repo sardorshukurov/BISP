@@ -15,11 +15,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(Settings.ApiRoot) });
 
+builder.Services.AddAuthorizationCore();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 
 await builder.Build().RunAsync();

@@ -1,19 +1,37 @@
-﻿<CascadingAuthenticationState>
+﻿@inject IAuthorizationService AuthorizationService
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Welisten.Client.Pages.Authorization.Services
+
+<CascadingAuthenticationState>
     <MudAppBar Fixed="false" Dense="true">
         <MudIconButton href="/">
             <MudImage Src="/icons/logo.png" Alt="Logo" Width="100"></MudImage>
         </MudIconButton>
-        <MudSpacer/>
-        <NotAuthorized>
-            <MudButtonGroup  OverrideStyles="false">
+        <MudSpacer />
+        <MudButtonGroup OverrideStyles="false">
+            <AuthorizeView>
+                <Authorized>
+                    @context.User.Identity!.Name
+                    @context.User.Identity.IsAuthenticated
+                    <MudButton @onclick="Logout" Color="Color.Primary" Variant="Variant.Filled">Logout</MudButton>
+                </Authorized>
+                <NotAuthorized>
                     <MudButton Href="/register" Color="Color.Secondary" Variant="Variant.Text">Sign Up</MudButton>
                     <MudButton Href="/login" Color="Color.Primary" Variant="Variant.Filled">Log in</MudButton>
-                </MudButtonGroup>
-        </NotAuthorized>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudButtonGroup>
     </MudAppBar>
 </CascadingAuthenticationState>
 
 
 @code{
     private const string Logo = "../wwwroot/icons/logo.png";
+
+    private async Task Logout()
+    {
+        await AuthorizationService.Logout();
+    }
+
 }

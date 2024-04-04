@@ -10,6 +10,6 @@ public class LoginResult
     [JsonPropertyName("error")]
     public string Error { get; set; }
 
-    [JsonPropertyName("error_description")]
+    [JsonPropertyName("message")]
     public string ErrorDescription { get; set; }
 }
