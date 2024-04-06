@@ -1,37 +1,66 @@
 ﻿@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using Welisten.Client.Pages.Authorization.Services
+@using Welisten.Client.Providers
+@using System.Security.Claims
+@using NuGet.Protocol
 
-<CascadingAuthenticationState>
-    <MudAppBar Fixed="false" Dense="true">
-        <MudIconButton href="/">
-            <MudImage Src="/icons/logo.png" Alt="Logo" Width="100"></MudImage>
-        </MudIconButton>
-        <MudSpacer />
-        <MudButtonGroup OverrideStyles="false">
-            <AuthorizeView>
-                <Authorized>
-                    @context.User.Identity!.Name
-                    @context.User.Identity.IsAuthenticated
+<MudAppBar Fixed="false" Dense="true">
+    <MudIconButton href="/">
+        <MudImage Src="/icons/logo.png" Alt="Logo" Width="100"></MudImage>
+    </MudIconButton>
+    <MudSpacer />
+    <MudButtonGroup OverrideStyles="false">
+        <AuthorizeView>
+            <Authorized>
+                    <MudText Align="Align.Center">@name</MudText>
                     <MudButton @onclick="Logout" Color="Color.Primary" Variant="Variant.Filled">Logout</MudButton>
-                </Authorized>
-                <NotAuthorized>
-                    <MudButton Href="/register" Color="Color.Secondary" Variant="Variant.Text">Sign Up</MudButton>
-                    <MudButton Href="/login" Color="Color.Primary" Variant="Variant.Filled">Log in</MudButton>
-                </NotAuthorized>
-            </AuthorizeView>
-        </MudButtonGroup>
-    </MudAppBar>
-</CascadingAuthenticationState>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Href="/register" Color="Color.Secondary" Variant="Variant.Text">Sign Up</MudButton>
+                <MudButton Href="/login" Color="Color.Primary" Variant="Variant.Filled">Log in</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudButtonGroup>
+</MudAppBar>
 
 
 @code{
     private const string Logo = "../wwwroot/icons/logo.png";
-
+    
     private async Task Logout()
     {
         await AuthorizationService.Logout();
+    }
+    private string? authMessage;
+    private string? name;
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var identity = user.Identity as ClaimsIdentity;
+            var claims = identity!.Claims.ToList();
+
+            var type = claims[2].Type;
+            name = claims.Find(c => c.Type.ToString() == "name")!.Value;
+            authMessage = $"{name}is authenticated.";
+        }
+        else
+        {
+            authMessage = "The user is NOT authenticated.";
+        }
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await GetClaimsPrincipalData();
     }
 
 }

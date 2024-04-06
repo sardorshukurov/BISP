@@ -33,12 +33,12 @@ public class AccountController : ControllerBase
             var user = await _userAccountService.Register(request);
             return Ok(user);
         }
-        catch (ProcessException e)
+        catch (ProcessException)
         {
             return BadRequest(new ErrorResponse
             {
-                Code = e.Code,
-                Message = e.Message
+                Code = StatusCode(403).StatusCode.ToString(),
+                Message = "Validation errors"
             });
         }
     }
@@ -55,12 +55,12 @@ public class AccountController : ControllerBase
                 Token = token
             });
         }
-        catch (ProcessException e)
+        catch (ProcessException)
         {
             return BadRequest(new ErrorResponse
             {
-                Code = e.Code,
-                Message = e.Message
+                Code = StatusCode(403).StatusCode.ToString(),
+                Message = "Validation errors"
             });
         }
         catch (Exception e)

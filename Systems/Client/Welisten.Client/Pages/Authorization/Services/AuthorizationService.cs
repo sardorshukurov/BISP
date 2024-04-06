@@ -2,7 +2,9 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Welisten.Client.Common;
 using Welisten.Client.Models.Authorization;
+using Welisten.Client.Pages.Authorization.Models;
 using Welisten.Client.Providers;
 
 namespace Welisten.Client.Pages.Authorization.Services;
@@ -43,7 +45,7 @@ public class AuthorizationService : IAuthorizationService
 
         var loginResult = JsonSerializer.Deserialize<LoginResult>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new LoginResult();
         loginResult.Successful = response.IsSuccessStatusCode;
-
+        
         if (!response.IsSuccessStatusCode)
         {
             return loginResult;
@@ -56,6 +58,31 @@ public class AuthorizationService : IAuthorizationService
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 
         return loginResult;
+    }
+
+    public async Task<RequestResult> Register(RegisterModel registerModel)
+    {
+        var url = $"{Settings.ApiRoot}/v1/Account/register";
+
+        var requestBody = new[] 
+        {        
+            new KeyValuePair<string, string>("name", registerModel.Name),
+            new KeyValuePair<string, string>("firstName", registerModel.FirstName),
+            new KeyValuePair<string, string>("lastName", registerModel.LastName),
+            new KeyValuePair<string, string>("email", registerModel.Email),
+            new KeyValuePair<string, string>("password", registerModel.Password)
+        };
+
+        var requestContent = new FormUrlEncodedContent(requestBody);
+
+        var response = await _httpClient.PostAsync(url, requestContent);
+        
+        var content = await response.Content.ReadAsStringAsync();
+
+        var registerResult = JsonSerializer.Deserialize<LoginResult>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new RequestResult();
+        registerResult.Successful = response.IsSuccessStatusCode;
+        
+        return registerResult;
     }
 
     public async Task Logout()
