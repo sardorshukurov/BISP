@@ -5,4 +5,6 @@ namespace Welisten.Client.Pages.Posts.Services;
 public interface IPostService
 {
     Task<IEnumerable<PostModel>> GetPosts();
+    Task<IEnumerable<TopicModel>> GetTopics();
+    Task CreatePost(CreatePostModel model);
 }

@@ -1,0 +1,53 @@
+@page "/CreatePost"
+@using Welisten.Client.Models.Post
+@using Welisten.Client.Pages.Posts.Services
+@using FluentValidation
+
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject IPostService PostService;
+
+<MudCard Style="width: 500px">
+    <MudForm Model="@model" @ref="@form" Validation="@(validator.ValidateValue)" ValidationDelay="0">
+        <MudCardContent>
+            <MudTextField @bind-Value="@model.Title"
+                          For="@((() => model.Title))"
+                          Immediate="true"
+                          Label="Title"/>
+            <MudTextField @bind-Value="@model.Text"
+                          For="@((() => model.Text))"
+                          Immediate="true"
+                          Label="Description"
+                          AutoGrow="true"/>
+            <MudCheckBox @bind-Value="@model.IsAnonymous"
+                         For="@(() => model.IsAnonymous)"
+                         Label="Post Anonymously?"/>
+        </MudCardContent>
+    </MudForm>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Post</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    MudForm form;
+    CreatePostModelValidator validator = new CreatePostModelValidator();
+    CreatePostModel model = new CreatePostModel();
+    IEnumerable<TopicModel> topics;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        topics = await PostService.GetTopics();
+    }
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            Snackbar.Add("Submitted!");
+            await PostService.CreatePost(model);
+            NavManager.NavigateTo("/");
+        }
+    }
+}

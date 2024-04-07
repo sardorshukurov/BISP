@@ -40,6 +40,7 @@ public class PostService : IPostService
             .Include(x => x.User)
             .Include(x => x.PostCount)
             .Include(x => x.Topics)
+            .OrderByDescending(x => x.Date)
             .ToListAsync();
         
         var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);

@@ -15,8 +15,9 @@
     <MudButtonGroup OverrideStyles="false">
         <AuthorizeView>
             <Authorized>
-                    <MudText Align="Align.Center">@name</MudText>
-                    <MudButton @onclick="Logout" Color="Color.Primary" Variant="Variant.Filled">Logout</MudButton>
+                <MudButton Href="/createPost" Variant="Variant.Filled" Color="Color.Success"><MudIcon Icon="@Icons.Material.Rounded.Add"/></MudButton>
+                <MudButton Color="Color.Secondary" Variant="Variant.Filled">@name</MudButton>
+                <MudButton @onclick="Logout" Color="Color.Primary" Variant="Variant.Filled">Logout</MudButton>
             </Authorized>
             <NotAuthorized>
                 <MudButton Href="/register" Color="Color.Secondary" Variant="Variant.Text">Sign Up</MudButton>
