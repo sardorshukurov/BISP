@@ -13,7 +13,7 @@
     <MudCard Width="50%" Square="false" Style="margin-bottom:50px">
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between">
-                <MudText Typo="Typo.subtitle1">@post.User.Name</MudText>
+                <MudText Typo="Typo.subtitle1">@(post.User == null ? "Anonymous" : post.User.Name)</MudText>
                 <MudText Typo="Typo.subtitle1">@post.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
             
