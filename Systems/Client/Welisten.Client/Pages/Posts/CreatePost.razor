@@ -22,6 +22,12 @@
             <MudCheckBox @bind-Value="@model.IsAnonymous"
                          For="@(() => model.IsAnonymous)"
                          Label="Post Anonymously?"/>
+            <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="Guid" Label="Topics" MultiSelection="true" @bind-SelectedValues="@model.Topics">
+                @foreach (TopicModel topic in topics)
+                {
+                    <MudSelectItem T="Guid" Value="@topic.Id">@topic.Type</MudSelectItem>
+                }
+            </MudSelect>
         </MudCardContent>
     </MudForm>
     <MudCardActions>
@@ -33,7 +39,7 @@
     MudForm form;
     CreatePostModelValidator validator = new CreatePostModelValidator();
     CreatePostModel model = new CreatePostModel();
-    IEnumerable<TopicModel> topics;
+    IEnumerable<TopicModel> topics = [];
     
     protected override async Task OnInitializedAsync()
     {
@@ -48,6 +54,18 @@
             Snackbar.Add("Submitted!");
             await PostService.CreatePost(model);
             NavManager.NavigateTo("/");
+        }
+    }
+    private bool multiselectionTextChoice;
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (multiselectionTextChoice)
+        {
+            return $"Selected topic{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x))}";
+        }
+        else
+        {
+            return $"{selectedValues.Count} topic{(selectedValues.Count > 1 ? "s have":" has")} been selected";
         }
     }
 }

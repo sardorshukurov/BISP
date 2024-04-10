@@ -8,7 +8,7 @@ public class CreatePostModel
     public string Title { get; set; } = string.Empty;
     public string Text { get; set; } = string.Empty;
     public bool IsAnonymous { get; set; }
-    public ICollection<Guid> Topics { get; set; } = [];
+    public IEnumerable<Guid> Topics { get; set; } = [];
 }
 
 

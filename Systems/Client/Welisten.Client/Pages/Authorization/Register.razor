@@ -10,7 +10,8 @@
 <MudGrid Justify="Justify.Center" Class="pa-10">
     <MudItem xs="7" sm="4">
         <MudPaper Class="pa-4">
-            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <EditForm Model="@model" 
+                      OnValidSubmit="@OnValidSubmit">
                 
                 <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-3">Register</MudText>
 
