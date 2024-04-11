@@ -56,10 +56,10 @@
             NavManager.NavigateTo("/");
         }
     }
-    private bool multiselectionTextChoice;
+    private bool _multiSelectionTextChoice;
     private string GetMultiSelectionText(List<string> selectedValues)
     {
-        if (multiselectionTextChoice)
+        if (_multiSelectionTextChoice)
         {
             return $"Selected topic{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x))}";
         }

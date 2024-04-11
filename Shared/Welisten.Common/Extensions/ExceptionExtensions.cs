@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Welisten.Common.Exceptions;
 using Welisten.Common.Responses;
@@ -71,8 +72,8 @@ public static class ErrorResponseExtensions
     /// <returns></returns>
     public static ErrorResponse ToErrorResponse(this ValidationException data)
     {
-        var code = "";
-        var message = "";
+        var code = StatusCodes.Status400BadRequest.ToString();
+        var message = string.Join(", ", data.Errors.Select(e => e.ErrorMessage));
 
         var res = new ErrorResponse()
         {
@@ -83,7 +84,7 @@ public static class ErrorResponseExtensions
                 Code = e.ErrorCode,
                 FieldName = e.PropertyName,
                 Message = e.ErrorMessage
-            })
+            }).ToList()
         };
 
         return res;
@@ -108,8 +109,8 @@ public static class ErrorResponseExtensions
 
         var res = new ErrorResponse()
         {
-            Code = "",
-            Message = "",
+            Code = StatusCodes.Status400BadRequest.ToString(),
+            Message = string.Join(", ", fieldErrors.Select(e => e.Message)),
             FieldErrors = fieldErrors
         };
 

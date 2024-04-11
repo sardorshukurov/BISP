@@ -35,11 +35,11 @@ public class AccountController : ControllerBase
         }
         catch (ProcessException e)
         {
-            return BadRequest(new ErrorResponse
-            {
-                Code = StatusCode(403).StatusCode.ToString(),
-                Message = e.Message
-            });
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 
@@ -57,11 +57,7 @@ public class AccountController : ControllerBase
         }
         catch (ProcessException e)
         {
-            return BadRequest(new ErrorResponse
-            {
-                Code = StatusCode(403).StatusCode.ToString(),
-                Message = e.Message
-            });
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {

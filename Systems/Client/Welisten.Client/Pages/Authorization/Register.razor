@@ -6,11 +6,12 @@
 
 @inject IAuthorizationService AuthorizationService
 @inject NavigationManager NavigationManager
-
+ 
 <MudGrid Justify="Justify.Center" Class="pa-10">
     <MudItem xs="7" sm="4">
         <MudPaper Class="pa-4">
-            <EditForm Model="@model" 
+            <EditForm Model="@_model" 
+                      Validation="@(_validator.ValidateValue)"
                       OnValidSubmit="@OnValidSubmit">
                 
                 <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-3">Register</MudText>
@@ -22,31 +23,31 @@
                 </MudAlert>
 
                 <MudTextField T="string"
-                              @bind-Value="model.Name" For="@(() => model.Name)"
+                              @bind-Value="_model.Name" For="@(() => _model.Name)"
                               Label="Username"
                               Required="true"
-                              RequiredError="Name is required"
+                              RequiredError="Username is required"
                               HelperText="Input your username"
-                              Validation="@(() => model.Name.Length > 5)"/>
+                              Validation="@(() => _model.Name.Length > 5)"/>
                 <MudTextField T="string"
-                              @bind-Value="model.FirstName" For="@(() => model.FirstName)"
+                              @bind-Value="_model.FirstName" For="@(() => _model.FirstName)"
                               Label="First name"
                               Required="true"
                               RequiredError="First name is required"
                               HelperText="Input your first name"/>
                 <MudTextField T="string"
-                              @bind-Value="model.LastName" For="@(() => model.LastName)"
-                              Label="Username"
+                              @bind-Value="_model.LastName" For="@(() => _model.LastName)"
+                              Label="Last name"
                               Required="false"
                               HelperText="Input your last name"/>
                 <MudTextField T="string"
-                                @bind-Value="model.Email" For="@(() => model.Email)"
+                                @bind-Value="_model.Email" For="@(() => _model.Email)"
                                 Label="Email" 
                                 Required="true" 
                                 RequiredError="Email is required!"
                                 HelperText="Input your email"
                                 Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})"/>
-                <MudTextField @bind-Value="model.Password" For="@(() => model.Password)"
+                <MudTextField @bind-Value="_model.Password" For="@(() => _model.Password)"
                                 Label="Password" 
                                 HelperText="Input your password"
                                 InputType="@PasswordInput"
@@ -66,14 +67,15 @@
 </MudGrid>
 
 @code {
-    bool success;
-    MudForm form;
+    private bool success;
+    private MudForm form;
 
-    private RegisterModel model = new RegisterModel();
+    private RegisterValidator _validator = new RegisterValidator();
+    private RegisterModel _model = new RegisterModel();
 
-    bool PasswordVisibility;
-    InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private bool PasswordVisibility;
+    private InputType PasswordInput = InputType.Password;
+    private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     private bool ShowErrors;
     private string Error;
@@ -102,7 +104,7 @@
         Error = "";
         ErrorDetail = "";
 
-        var result = await AuthorizationService.Register(model);
+        var result = await AuthorizationService.Register(_model);
 
         if (result.Successful)
         {
