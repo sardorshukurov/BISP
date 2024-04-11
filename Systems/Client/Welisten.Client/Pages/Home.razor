@@ -21,7 +21,7 @@
             <MudText Typo="Typo.body1">@post.Text</MudText>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@(() => @LikeOrDisLike(@post.Id))"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Comment"/>@post.CommentCount</MudButton>
         </MudCardActions>
     </MudCard>
@@ -35,6 +35,32 @@
     private async Task ReloadData()
     {
         _posts = await PostService.GetPosts();
+    }
+
+    private async Task LikeOrDisLike(Guid id)
+    {
+        try
+        {
+            // Call the PostService method to like or dislike the post
+            await PostService.LikeOrDisLike(id);
+
+            // Find the post in the _posts collection by its id
+            var postToUpdate = _posts.FirstOrDefault(p => p.Id == id);
+        
+            // Update the like count of the post
+            if (postToUpdate != null)
+            {
+                // Retrieve the latest data for the post from the server
+                var updatedPost = await PostService.GetPostById(id);
+                // Update the like count of the post with the new data
+                postToUpdate.LikeCount = updatedPost.LikeCount;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that occur during the operation
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
     
     protected override async Task OnInitializedAsync()

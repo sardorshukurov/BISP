@@ -44,4 +44,25 @@ public class PostService(HttpClient httpClient) : IPostService
         }
     }
 
+    public async Task LikeOrDisLike(Guid id)
+    {
+        var response = await httpClient.PostAsync($"v1/Like/{id}", null);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(errorContent);
+        }
+    }
+
+    public async Task<PostModel> GetPostById(Guid id)
+    {
+        var response = await httpClient.GetAsync($"v1/Post/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+        return (await response.Content.ReadFromJsonAsync<PostModel>())!;
+    }
 }

@@ -7,4 +7,6 @@ public interface IPostService
     Task<IEnumerable<PostModel>> GetPosts();
     Task<IEnumerable<TopicModel>> GetTopics();
     Task CreatePost(CreatePostModel model);
+    Task LikeOrDisLike(Guid id);
+    Task<PostModel> GetPostById(Guid id);
 }
