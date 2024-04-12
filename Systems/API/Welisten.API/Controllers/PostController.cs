@@ -32,6 +32,25 @@ public class PostController : ControllerBase
         return await _postService.GetAll();
     }
 
+    [Authorize]
+    [HttpGet("byUser")]
+    public async Task<IActionResult> GetByUser()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            try
+            {
+                return Ok(await _postService.GetByUser(userId));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        return Unauthorized();
+    }
+    
     [AllowAnonymous]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById([FromRoute] Guid id)

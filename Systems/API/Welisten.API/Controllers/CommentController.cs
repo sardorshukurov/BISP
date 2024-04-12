@@ -28,6 +28,7 @@ public class CommentController : ControllerBase
         _userService = userService;
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(CreateCommentModel request)
     {
@@ -48,6 +49,7 @@ public class CommentController : ControllerBase
         return Unauthorized();
     }
 
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
@@ -91,5 +93,28 @@ public class CommentController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred. Please try again later.");
         }
+    }
+    
+    [Authorize]
+    [HttpGet("byUser")]
+    public async Task<IActionResult> GetByUser()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            try
+            {
+                return Ok(await _commentService.GetCommentsByUser(userId));
+            }
+            catch (AuthenticationException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        return Unauthorized();
     }
 }

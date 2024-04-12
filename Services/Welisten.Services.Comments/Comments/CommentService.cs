@@ -23,7 +23,7 @@ public class CommentService : ICommentService
         _mapper = mapper;
     }
 
-    public async Task<List<CommentModel>> GetCommentsById(Guid postId)
+    public async Task<IEnumerable<CommentModel>> GetCommentsById(Guid postId)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
 
@@ -36,6 +36,17 @@ public class CommentService : ICommentService
             throw new InvalidOperationException($"Post with ID {postId} not found.");
         
         return _mapper.Map<List<CommentModel>>(post.Comments);
+    }
+
+    public async Task<IEnumerable<CommentModel>> GetCommentsByUser(Guid userId)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var comments = await context.Comments
+            .Where(c => c.UserId == userId)
+            .ToListAsync();
+        
+        return _mapper.Map<List<CommentModel>>(comments);
     }
 
     public async Task<CommentModel> Create(CreateCommentModel model, Guid userId)

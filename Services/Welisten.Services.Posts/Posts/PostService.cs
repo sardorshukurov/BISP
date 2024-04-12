@@ -1,7 +1,6 @@
 using System.Security.Authentication;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Welisten.Common.Exceptions;
 using Welisten.Common.Validator;
 using Welisten.Context.Context;
@@ -41,6 +40,23 @@ public class PostService : IPostService
             .Include(x => x.PostCount)
             .Include(x => x.Topics)
             .OrderByDescending(x => x.Date)
+            .ToListAsync();
+        
+        var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
+        
+        return result;
+    }
+
+    public async Task<IEnumerable<PostModel>> GetByUser(Guid userId)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        
+        var posts = await context.Posts
+            .Include(x => x.User)
+            .Include(x => x.PostCount)
+            .Include(x => x.Topics)
+            .OrderByDescending(x => x.Date)
+            .Where(x => x.UserId == userId)
             .ToListAsync();
         
         var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
