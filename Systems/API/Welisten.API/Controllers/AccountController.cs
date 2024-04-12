@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -67,12 +68,25 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
+    public async Task<IActionResult> Get()
     {
         try
         {
-            return Ok(await _userAccountService.GetUser(id));
+            if (!await _userAccountService.Exists(User))
+                return Unauthorized();
+
+            if (_userAccountService.IsExpired(User))
+                return Unauthorized();
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            {
+                var result = await _userAccountService.GetUser(userId);
+                return Ok(result);
+            }
+
+            return Unauthorized();
         }
         catch (Exception e)
         {
