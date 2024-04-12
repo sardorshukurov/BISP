@@ -5,13 +5,13 @@
 
 @inject IPostService PostService;
 @inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
+@inject NavigationManager NavManager
 
 @layout MainLayout
 
 @foreach (var post in _posts)
 {
-    <MudCard @onclick="@(() => OpenPost(post.Id))" Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
+    <MudCard @onclick="@(() => NavManager.NavigateTo($"/posts/{post.Id}"))" Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
                 <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : post.User.Name)</MudText>
@@ -31,7 +31,7 @@
 
 @code{
 
-    private IEnumerable<PostModel> _posts = new List<PostModel>();
+    private IEnumerable<PostModel> _posts = [];
 
     private async Task ReloadData()
     {
@@ -47,7 +47,7 @@
 
             // Find the post in the _posts collection by its id
             var postToUpdate = _posts.FirstOrDefault(p => p.Id == id);
-        
+
             // Update the like count of the post
             if (postToUpdate != null)
             {
@@ -62,11 +62,6 @@
             // Handle any exceptions that occur during the operation
             Snackbar.Add(ex.Message, Severity.Error);
         }
-    }
-
-    private async Task OpenPost(Guid id)
-    {
-        NavigationManager.NavigateTo($"/posts/{id}");
     }
     
     protected override async Task OnInitializedAsync()

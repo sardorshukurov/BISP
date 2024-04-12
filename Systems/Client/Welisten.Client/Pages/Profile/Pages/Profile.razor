@@ -2,7 +2,14 @@
 @using Welisten.Client.Pages.Profile.Models
 @using Welisten.Client.Pages.Profile.Services
 @using Microsoft.AspNetCore.Components.Authorization
+@using Welisten.Client.Models.Post
+@using Welisten.Client.Pages.Comments.Models
+@using Welisten.Client.Pages.Comments.Services
+@using Welisten.Client.Pages.Posts.Services
+@using Welisten.Common.Extensions
 
+@inject IPostService PostService;
+@inject ICommentService CommentService;
 @inject IUserService UserService;
 @inject ISnackbar Snackbar;
 @inject NavigationManager NavManager
@@ -28,6 +35,50 @@
                 </MudContainer>
             </MudCardContent>
         </MudCard>
+        
+        <MudTabs Elevation="4" Rounded="true" Centered="true" Color="@Color.Primary">
+            <MudTabPanel Text="My Posts">
+                @foreach (var post in _posts)
+                {
+                    <MudCard @onclick="@(() => NavManager.NavigateTo($"/posts/{post.Id}"))" Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
+                        <MudCardContent Align="left">
+                            <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
+                                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User!.Name)</MudText>
+                                <MudText Typo="Typo.subtitle2">@post.Date.ToLocalTime().FormatDate()</MudText>
+                            </MudContainer>
+                            
+                            <MudText Typo="Typo.h6">@post.Title</MudText>
+                            <MudText Typo="Typo.body2">@post.Text</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@()"><MudIcon Icon="@Icons.Material.Rounded.Edit"/>Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/>Delete</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                }
+            </MudTabPanel>
+            <MudTabPanel Text="My Comments">
+                @foreach (var comment in _comments)
+                {
+                    <MudCard Width="50%" Square="false" Outlined="true" 
+                             Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
+                        <MudCardContent Align="left">
+                            <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
+                                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(comment.User!.Name)</MudText>
+                            </MudContainer>
+                        
+                            <MudText Typo="Typo.body2">@comment.Text</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@()"><MudIcon Icon="@Icons.Material.Rounded.Edit"/>Edit</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/>Delete</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                }
+            </MudTabPanel>
+        </MudTabs>
+        
+        
     </Authorized>
     <NotAuthorized>
         @{
@@ -39,7 +90,9 @@
 
 @code {
     private UserModel _model = new UserModel();
-
+    private IEnumerable<PostModel> _posts = [];
+    private IEnumerable<CommentModel> _comments = [];
+    
     protected override async Task OnInitializedAsync()
     {        
         try
