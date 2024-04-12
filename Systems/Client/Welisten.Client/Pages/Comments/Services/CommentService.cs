@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using Welisten.Client.Pages.Comments.Models;
 
 namespace Welisten.Client.Pages.Comments.Services;
@@ -15,5 +17,19 @@ public class CommentService(HttpClient httpClient) : ICommentService
         }
 
         return await response.Content.ReadFromJsonAsync<IEnumerable<CommentModel>>() ?? new List<CommentModel>();
+    }
+
+    public async Task Comment(CreateCommentModel model)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PostAsync("v1/Comment", content);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(errorContent);
+        }
     }
 }

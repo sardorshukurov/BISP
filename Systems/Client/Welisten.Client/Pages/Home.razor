@@ -5,15 +5,16 @@
 
 @inject IPostService PostService;
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 @layout MainLayout
 
 @foreach (var post in _posts)
 {
-    <MudCard Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem">
+    <MudCard @onclick="@(() => OpenPost(post.Id))" Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
-                <MudText Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : post.User.Name)</MudText>
+                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : post.User.Name)</MudText>
                 <MudText Typo="Typo.subtitle2">@post.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
             
@@ -61,6 +62,11 @@
             // Handle any exceptions that occur during the operation
             Snackbar.Add(ex.Message, Severity.Error);
         }
+    }
+
+    private async Task OpenPost(Guid id)
+    {
+        NavigationManager.NavigateTo($"/posts/{id}");
     }
     
     protected override async Task OnInitializedAsync()
