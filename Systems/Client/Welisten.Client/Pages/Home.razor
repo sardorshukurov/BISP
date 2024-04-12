@@ -10,15 +10,15 @@
 
 @foreach (var post in _posts)
 {
-    <MudCard Width="50%" Square="false" Style="margin-bottom:50px">
+    <MudCard Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem">
         <MudCardContent Align="left">
-            <MudContainer Style="padding:0; display: flex; justify-content: space-between">
-                <MudText Typo="Typo.subtitle1">@(post.User == null ? "Anonymous" : post.User.Name)</MudText>
-                <MudText Typo="Typo.subtitle1">@post.Date.ToLocalTime().FormatDate()</MudText>
+            <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
+                <MudText Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : post.User.Name)</MudText>
+                <MudText Typo="Typo.subtitle2">@post.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
             
-            <MudText Typo="Typo.h5">@post.Title</MudText>
-            <MudText Typo="Typo.body1">@post.Text</MudText>
+            <MudText Typo="Typo.h6">@post.Title</MudText>
+            <MudText Typo="Typo.body2">@post.Text</MudText>
         </MudCardContent>
         <MudCardActions>
             <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@(() => @LikeOrDisLike(@post.Id))"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
