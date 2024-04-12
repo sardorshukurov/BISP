@@ -1,39 +1,48 @@
 @page "/CreatePost"
 @using Welisten.Client.Models.Post
 @using Welisten.Client.Pages.Posts.Services
-@using FluentValidation
+@using Microsoft.AspNetCore.Components.Authorization
 
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
 @inject IPostService PostService;
 
-<MudCard Style="max-width: 500px">
-    <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
-        <MudCardContent>
-            <MudTextField @bind-Value="@_model.Title"
-                          For="@((() => _model.Title))"
-                          Immediate="true"
-                          Label="Title"/>
-            <MudTextField @bind-Value="@_model.Text"
-                          For="@((() => _model.Text))"
-                          Immediate="true"
-                          Label="Description"
-                          AutoGrow="true"/>
-            <MudCheckBox @bind-Value="@_model.IsAnonymous"
-                         For="@(() => _model.IsAnonymous)"
-                         Label="Post Anonymously?"/>
-            <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="Guid" Label="Topics" MultiSelection="true" @bind-SelectedValues="@_model.Topics">
-                @foreach (TopicModel topic in _topics)
-                {
-                    <MudSelectItem T="Guid" Value="@topic.Id">@topic.Type</MudSelectItem>
-                }
-            </MudSelect>
-        </MudCardContent>
-    </MudForm>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Post</MudButton>
-    </MudCardActions>
-</MudCard>
+<AuthorizeView>
+    <Authorized>
+        <MudCard Style="max-width: 500px">
+            <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
+                <MudCardContent>
+                    <MudTextField @bind-Value="@_model.Title"
+                                  For="@((() => _model.Title))"
+                                  Immediate="true"
+                                  Label="Title"/>
+                    <MudTextField @bind-Value="@_model.Text"
+                                  For="@((() => _model.Text))"
+                                  Immediate="true"
+                                  Label="Description"
+                                  AutoGrow="true"/>
+                    <MudCheckBox @bind-Value="@_model.IsAnonymous"
+                                 For="@(() => _model.IsAnonymous)"
+                                 Label="Post Anonymously?"/>
+                    <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="Guid" Label="Topics" MultiSelection="true" @bind-SelectedValues="@_model.Topics">
+                        @foreach (TopicModel topic in _topics)
+                        {
+                            <MudSelectItem T="Guid" Value="@topic.Id">@topic.Type</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudForm>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Post</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavManager.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private MudForm _form;
@@ -44,7 +53,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _topics = await PostService.GetTopics();
+        try
+        {
+            _topics = await PostService.GetTopics();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
     }
     private async Task Submit()
     {
