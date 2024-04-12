@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Welisten.Common.Exceptions;
 using Welisten.Common.Security;
 using Welisten.Common.Validator;
+using Welisten.Context.Context;
 using Welisten.Context.Entities;
 
 namespace Welisten.Services.UserAccounts;
@@ -22,18 +23,21 @@ public class UserAccountService
     private readonly IModelValidator<RegisterDto> _registerValidator;
     private readonly IModelValidator<LoginDto> _loginValidator;
     private readonly JwtConfig _jwtConfig;
+    private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
     public UserAccountService(
         IMapper mapper,
         UserManager<User> userManager,
         IModelValidator<RegisterDto> registerValidator,
         IModelValidator<LoginDto> loginValidator,
-        IOptionsMonitor<JwtConfig> optionsMonitor)
+        IOptionsMonitor<JwtConfig> optionsMonitor,
+        IDbContextFactory<MainDbContext> dbContextFactory)
     {
         _mapper = mapper;
         _userManager = userManager;
         _registerValidator = registerValidator;
         _loginValidator = loginValidator;
         _jwtConfig = optionsMonitor.CurrentValue;
+        _dbContextFactory = dbContextFactory;
     }
 
     public async Task<bool> IsEmpty()
@@ -105,6 +109,15 @@ public class UserAccountService
         }
     
         return _mapper.Map<UserAccountModel>(user);
+    }
+
+    public async Task<UserAccountModel> GetUser(Guid userId)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        return _mapper.Map<User, UserAccountModel>(user!);
     }
 
     public async Task<string> Login(LoginDto loginDto)

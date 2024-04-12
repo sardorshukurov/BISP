@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Welisten.Common.Exceptions;
 using Welisten.Common.Responses;
@@ -58,6 +59,20 @@ public class AccountController : ControllerBase
         catch (ProcessException e)
         {
             return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        try
+        {
+            return Ok(await _userAccountService.GetUser(id));
         }
         catch (Exception e)
         {

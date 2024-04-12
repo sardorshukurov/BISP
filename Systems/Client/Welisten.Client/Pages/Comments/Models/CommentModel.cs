@@ -1,4 +1,4 @@
-using Welisten.Client.Models.User;
+using Welisten.Client.Pages.Profile.Models;
 
 namespace Welisten.Client.Pages.Comments.Models;
 

@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Data\Welisten.Context.Entities\Welisten.Context.Entities.csproj" />
+      <ProjectReference Include="..\..\Data\Welisten.Context\Welisten.Context.csproj" />
       <ProjectReference Include="..\..\Shared\Welisten.Common\Welisten.Common.csproj" />
     </ItemGroup>
 

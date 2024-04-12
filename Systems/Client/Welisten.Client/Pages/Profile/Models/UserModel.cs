@@ -1,4 +1,4 @@
-namespace Welisten.Client.Models.User;
+namespace Welisten.Client.Pages.Profile.Models;
 
 public class UserModel
 {
