@@ -43,6 +43,7 @@ public class CommentService : ICommentService
         await using var context = await _dbContextFactory.CreateDbContextAsync();
 
         var comments = await context.Comments
+            .Include(c => c.Post)
             .Where(c => c.UserId == userId)
             .ToListAsync();
         

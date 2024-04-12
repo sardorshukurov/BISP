@@ -40,10 +40,9 @@
             <MudTabPanel Text="My Posts">
                 @foreach (var post in _posts)
                 {
-                    <MudCard @onclick="@(() => NavManager.NavigateTo($"/posts/{post.Id}"))" Width="50%" Square="false" Outlined="true" Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
+                    <MudCard @onclick="@(() => NavManager.NavigateTo($"/posts/{post.Id}"))" Width="50%" Square="false" Outlined="true" Style="margin-top: 25px; margin-bottom:25px; max-width: 600px; border-radius: 1rem; cursor: pointer">
                         <MudCardContent Align="left">
                             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
-                                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User!.Name)</MudText>
                                 <MudText Typo="Typo.subtitle2">@post.Date.ToLocalTime().FormatDate()</MudText>
                             </MudContainer>
                             
@@ -51,8 +50,8 @@
                             <MudText Typo="Typo.body2">@post.Text</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@()"><MudIcon Icon="@Icons.Material.Rounded.Edit"/>Edit</MudButton>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/>Delete</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -60,18 +59,14 @@
             <MudTabPanel Text="My Comments">
                 @foreach (var comment in _comments)
                 {
-                    <MudCard Width="50%" Square="false" Outlined="true" 
-                             Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
+                    <MudCard @onclick="@(() => NavManager.NavigateTo($"/posts/{comment.PostId}"))" Width="50%" Square="false" Outlined="true" 
+                             Style="margin-top: 25px; margin-bottom:25px; max-width: 600px; border-radius: 1rem; cursor: pointer;">
                         <MudCardContent Align="left">
-                            <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
-                                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(comment.User!.Name)</MudText>
-                            </MudContainer>
-                        
                             <MudText Typo="Typo.body2">@comment.Text</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@()"><MudIcon Icon="@Icons.Material.Rounded.Edit"/>Edit</MudButton>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/>Delete</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -98,6 +93,8 @@
         try
         {
             _model = await UserService.Get();
+            _posts = await PostService.GetPostsByUser();
+            _comments = await CommentService.GetCommentsByUser();
         }
         catch (Exception e)
         {

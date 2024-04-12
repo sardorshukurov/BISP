@@ -19,6 +19,18 @@ public class CommentService(HttpClient httpClient) : ICommentService
         return await response.Content.ReadFromJsonAsync<IEnumerable<CommentModel>>() ?? new List<CommentModel>();
     }
 
+    public async Task<IEnumerable<CommentModel>> GetCommentsByUser()
+    {
+        var response = await httpClient.GetAsync("v1/Comment/byUser");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+
+        return await response.Content.ReadFromJsonAsync<IEnumerable<CommentModel>>() ?? new List<CommentModel>();
+    }
+
     public async Task Comment(CreateCommentModel model)
     {
         var json = JsonSerializer.Serialize(model);
