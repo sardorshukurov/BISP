@@ -22,8 +22,8 @@
             <MudText Typo="Typo.body2">@post.Text</MudText>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@(() => @LikeOrDisLike(@post.Id))"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
-            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Comment"/>@post.CommentCount</MudButton>
+            <MudButton OnClick="@(() => @LikeOrDisLike(@post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
+            <MudButton OnClick="@(() => NavManager.NavigateTo($"/posts/{post.Id}"))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Comment"/>@post.CommentCount</MudButton>
         </MudCardActions>
     </MudCard>
 }

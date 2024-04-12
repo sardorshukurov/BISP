@@ -8,4 +8,5 @@ public interface ICommentService
     Task<IEnumerable<CommentModel>> GetComments(Guid postId);
     Task<IEnumerable<CommentModel>> GetCommentsByUser();
     Task Comment(CreateCommentModel model);
+    Task Delete(Guid id);
 }

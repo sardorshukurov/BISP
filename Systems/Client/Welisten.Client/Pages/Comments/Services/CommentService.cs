@@ -44,4 +44,14 @@ public class CommentService(HttpClient httpClient) : ICommentService
             throw new Exception(errorContent);
         }
     }
+
+    public async Task Delete(Guid id)
+    {
+        var response = await httpClient.DeleteAsync($"v1/Comment/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+    }
 }

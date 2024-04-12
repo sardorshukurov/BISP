@@ -38,7 +38,7 @@
             </MudCardContent>
         </MudCard>
         
-        <MudTabs Elevation="4" Rounded="true" Centered="true" Color="@Color.Primary">
+        <MudTabs Elevation="4" Rounded="false" Centered="true" Color="@Color.Primary">
             <MudTabPanel Text="My Posts">
                 @foreach (var post in _posts)
                 {
@@ -53,7 +53,7 @@
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
-                            <MudButton @onclick="@(() => DeletePost(post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
+                            <MudButton OnClick="@(() => DeletePost(post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -72,7 +72,7 @@
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
+                            <MudButton OnClick="@(() => DeleteComment(comment.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -112,6 +112,34 @@
                 await PostService.Delete(postId);
                 Snackbar.Add("Deleted");
                 _posts = await PostService.GetPostsByUser();
+                StateHasChanged();
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Something went wrong", Severity.Error);
+            }
+        }
+    }
+    
+    private async void DeleteComment(Guid commentId)
+    {
+        var parameters = new DialogParameters<Dialog>();
+        parameters.Add(x => x.ContentText, "Do you really want to delete the comment? This process cannot be undone.");
+        parameters.Add(x => x.ButtonText, "Delete");
+        parameters.Add(x => x.Color, Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<Dialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            try
+            {
+                await CommentService.Delete(commentId);
+                Snackbar.Add("Deleted");
+                _comments = await CommentService.GetCommentsByUser();
+                StateHasChanged();
             }
             catch (Exception)
             {
