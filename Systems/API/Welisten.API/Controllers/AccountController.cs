@@ -68,6 +68,7 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet]
     public async Task<IActionResult> Get()
     {
         try

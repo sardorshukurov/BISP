@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using Welisten.Client.Pages.Authorization.Services;
 using Welisten.Client.Pages.Comments.Services;
 using Welisten.Client.Pages.Posts.Services;
+using Welisten.Client.Pages.Profile.Services;
 using Welisten.Client.Providers;
 
 
@@ -22,6 +23,7 @@ builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();

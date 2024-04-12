@@ -4,5 +4,5 @@ namespace Welisten.Client.Pages.Profile.Services;
 
 public interface IUserService
 {
-    Task<UserModel> Get(Guid id);
+    Task<UserModel> Get();
 }

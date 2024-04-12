@@ -1,11 +1,12 @@
-﻿@inject IAuthorizationService AuthorizationService
-@inject AuthenticationStateProvider AuthenticationStateProvider
-
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Welisten.Client.Pages.Authorization.Services
 @using Welisten.Client.Providers
 @using System.Security.Claims
 @using NuGet.Protocol
+
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
 
 <MudAppBar Fixed="false" Dense="true">
     <MudIconButton href="/">
@@ -16,7 +17,7 @@
         <AuthorizeView>
             <Authorized>
                 <MudButton Href="/createPost" Variant="Variant.Filled" Color="Color.Success"><MudIcon Icon="@Icons.Material.Rounded.Add"/></MudButton>
-                <MudButton Color="Color.Secondary" Variant="Variant.Filled">@name</MudButton>
+                <MudButton @onclick="@(() => NavManager.NavigateTo("/profile"))" Color="Color.Secondary" Variant="Variant.Filled">@name</MudButton>
                 <MudButton @onclick="Logout" Color="Color.Primary" Variant="Variant.Filled">Logout</MudButton>
             </Authorized>
             <NotAuthorized>
@@ -59,7 +60,7 @@
         }
     }
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         await GetClaimsPrincipalData();
     }
