@@ -10,4 +10,5 @@ public interface IPostService
     Task CreatePost(CreatePostModel model);
     Task LikeOrDisLike(Guid id);
     Task<PostModel> GetPostById(Guid id);
+    Task Delete(Guid id);
 }

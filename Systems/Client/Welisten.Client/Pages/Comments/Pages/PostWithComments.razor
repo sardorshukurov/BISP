@@ -55,6 +55,7 @@
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
                 <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(comment.User == null ? "Anonymous" : comment.User.Name)</MudText>
+                <MudText Typo="Typo.subtitle2">@comment.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
         
             <MudText Typo="Typo.body2">@comment.Text</MudText>

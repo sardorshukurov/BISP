@@ -76,4 +76,14 @@ public class PostService(HttpClient httpClient) : IPostService
         }
         return (await response.Content.ReadFromJsonAsync<PostModel>())!;
     }
+
+    public async Task Delete(Guid id)
+    {
+        var response = await httpClient.DeleteAsync($"v1/Post/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+    }
 }

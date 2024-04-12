@@ -9,4 +9,5 @@ public class CommentModel
     public required bool IsAnonymous { get; set; }
     public UserModel? User { get; set; }
     public Guid PostId { get; set; }
+    public DateTime Date { get; set; }
 }

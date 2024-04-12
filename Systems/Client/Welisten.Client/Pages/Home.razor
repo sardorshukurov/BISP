@@ -57,10 +57,10 @@
                 postToUpdate.LikeCount = updatedPost.LikeCount;
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Handle any exceptions that occur during the operation
-            Snackbar.Add(ex.Message, Severity.Error);
+            Snackbar.Add("Something went wrong", Severity.Error);
         }
     }
     
@@ -70,9 +70,9 @@
         {
             await ReloadData();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Snackbar.Add(ex.Message, Severity.Error);
+            Snackbar.Add("Something went wrong", Severity.Error);
         }
     }
 }

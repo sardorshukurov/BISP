@@ -2,6 +2,7 @@
 @using Welisten.Client.Pages.Profile.Models
 @using Welisten.Client.Pages.Profile.Services
 @using Microsoft.AspNetCore.Components.Authorization
+@using Welisten.Client.Components
 @using Welisten.Client.Models.Post
 @using Welisten.Client.Pages.Comments.Models
 @using Welisten.Client.Pages.Comments.Services
@@ -12,6 +13,7 @@
 @inject ICommentService CommentService;
 @inject IUserService UserService;
 @inject ISnackbar Snackbar;
+@inject IDialogService DialogService;
 @inject NavigationManager NavManager
 
 <h3>Profile</h3>
@@ -51,7 +53,7 @@
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
+                            <MudButton @onclick="@(() => DeletePost(post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
                 }
@@ -62,6 +64,10 @@
                     <MudCard @onclick="@(() => NavManager.NavigateTo($"/posts/{comment.PostId}"))" Width="50%" Square="false" Outlined="true" 
                              Style="margin-top: 25px; margin-bottom:25px; max-width: 600px; border-radius: 1rem; cursor: pointer;">
                         <MudCardContent Align="left">
+                            <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
+                                <MudText Typo="Typo.subtitle2">@comment.Date.ToLocalTime().FormatDate()</MudText>
+                            </MudContainer>
+                            
                             <MudText Typo="Typo.body2">@comment.Text</MudText>
                         </MudCardContent>
                         <MudCardActions>
@@ -88,6 +94,32 @@
     private IEnumerable<PostModel> _posts = [];
     private IEnumerable<CommentModel> _comments = [];
     
+    private async void DeletePost(Guid postId)
+    {
+        var parameters = new DialogParameters<Dialog>();
+        parameters.Add(x => x.ContentText, "Do you really want to delete the post? This process cannot be undone.");
+        parameters.Add(x => x.ButtonText, "Delete");
+        parameters.Add(x => x.Color, Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<Dialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            try
+            {
+                await PostService.Delete(postId);
+                Snackbar.Add("Deleted");
+                _posts = await PostService.GetPostsByUser();
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Something went wrong", Severity.Error);
+            }
+        }
+    }
+    
     protected override async Task OnInitializedAsync()
     {        
         try
@@ -96,9 +128,9 @@
             _posts = await PostService.GetPostsByUser();
             _comments = await CommentService.GetCommentsByUser();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Snackbar.Add(e.Message, Severity.Error);
+            Snackbar.Add("Something went wrong", Severity.Error);
         }
     }
 }

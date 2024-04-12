@@ -13,6 +13,7 @@ public class CommentModel
     public Guid? UserId { get; set; }
     public UserDto? User { get; set; }
     public Guid PostId { get; set; }
+    public DateTime Date { get; set; }
 }
 
 public class CommentModelProfile : Profile
@@ -26,6 +27,8 @@ public class CommentModelProfile : Profile
                 opt.MapFrom(src => src.IsAnonymous ? (Guid?)null : src.UserId))
             .ForMember(dest => dest.PostId, opt =>
                 opt.MapFrom(src => src.Post.Uid))
+            .ForMember(dest => dest.Date, opt =>
+                opt.MapFrom(src => src.Date))
             .ForMember(dest => dest.User, opt => 
                 opt.MapFrom<CommentUserResolver>());
     }
