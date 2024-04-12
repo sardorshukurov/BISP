@@ -5,6 +5,12 @@ public static class DateTimeExtensions
     public static string FormatDate(this DateTime dateTime)
     {
         var timeSpan = DateTime.Now - dateTime;
+
+        if (timeSpan.TotalMinutes < 1)
+        {
+            var seconds = (int)timeSpan.TotalSeconds;
+            return $"{seconds}s ago";
+        }
         
         if (timeSpan.TotalMinutes < 60)
         {
