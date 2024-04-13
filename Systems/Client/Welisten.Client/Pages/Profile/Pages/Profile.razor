@@ -25,7 +25,7 @@
             <MudCardContent Align="left">
                 <MudContainer Style="padding:0; margin-bottom: 10px">
                     <MudText Color="Color.Primary" Typo="Typo.subtitle2">User name</MudText>
-                    <MudText Color="Color.Dark" Typo="Typo.subtitle1">@_model.Name</MudText>
+                    <MudText Color="Color.Dark" Typo="Typo.subtitle1">@($"@{_model.Name}")</MudText>
                 </MudContainer>
                 <MudContainer Style="padding:0; margin-bottom: 10px">
                     <MudText Color="Color.Primary" Typo="Typo.subtitle2">First name</MudText>
@@ -96,14 +96,14 @@
     
     private async void DeletePost(Guid postId)
     {
-        var parameters = new DialogParameters<Dialog>();
+        var parameters = new DialogParameters<_dialog>();
         parameters.Add(x => x.ContentText, "Do you really want to delete the post? This process cannot be undone.");
         parameters.Add(x => x.ButtonText, "Delete");
         parameters.Add(x => x.Color, Color.Error);
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-        var dialog = DialogService.Show<Dialog>("Delete", parameters, options);
+        var dialog = DialogService.Show<_dialog>("Delete", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -123,14 +123,14 @@
     
     private async void DeleteComment(Guid commentId)
     {
-        var parameters = new DialogParameters<Dialog>();
+        var parameters = new DialogParameters<_dialog>();
         parameters.Add(x => x.ContentText, "Do you really want to delete the comment? This process cannot be undone.");
         parameters.Add(x => x.ButtonText, "Delete");
         parameters.Add(x => x.Color, Color.Error);
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-        var dialog = DialogService.Show<Dialog>("Delete", parameters, options);
+        var dialog = DialogService.Show<_dialog>("Delete", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {

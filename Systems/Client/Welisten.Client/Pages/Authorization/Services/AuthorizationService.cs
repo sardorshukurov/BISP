@@ -42,7 +42,12 @@ public class AuthorizationService : IAuthorizationService
         var response = await _httpClient.PostAsync(url, requestContent);
     
         var content = await response.Content.ReadAsStringAsync();
-
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(content);
+        }
+        
         var loginResult = JsonSerializer.Deserialize<LoginResult>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new LoginResult();
         loginResult.Successful = response.IsSuccessStatusCode;
         
@@ -78,7 +83,12 @@ public class AuthorizationService : IAuthorizationService
         var response = await _httpClient.PostAsync(url, requestContent);
         
         var content = await response.Content.ReadAsStringAsync();
-
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(content);
+        }
+        
         var registerResult = JsonSerializer.Deserialize<LoginResult>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new RequestResult();
         registerResult.Successful = response.IsSuccessStatusCode;
         

@@ -83,16 +83,15 @@
         await _form.Validate();
         if (_form.IsValid)
         {
-            var result = await AuthorizationService.Login(_model);
-
-            if (result.Successful)
+            try
             {
+                await AuthorizationService.Login(_model);
                 Snackbar.Add("Welcome back!");
                 NavigationManager.NavigateTo("/", true);
             }
-            else
+            catch (Exception e)
             {
-                Snackbar.Add("Wrong email or password");
+                Snackbar.Add(e.Message, Severity.Error);
             }
         }
     }

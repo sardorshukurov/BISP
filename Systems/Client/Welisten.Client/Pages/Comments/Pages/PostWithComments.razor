@@ -14,7 +14,7 @@
          Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
     <MudCardContent Align="left">
         <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
-            <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(_post.User == null ? "Anonymous" : _post.User.Name)</MudText>
+            <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(_post.User == null ? "Anonymous" : $"@{_post.User.Name}")</MudText>
             <MudText Typo="Typo.subtitle2">@_post.Date.ToLocalTime().FormatDate()</MudText>
         </MudContainer>
         
@@ -55,7 +55,7 @@
              Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
-                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(comment.User == null ? "Anonymous" : comment.User.Name)</MudText>
+                <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(comment.User == null ? "Anonymous" : $"@{comment.User.Name}")</MudText>
                 <MudText Typo="Typo.subtitle2">@comment.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
         

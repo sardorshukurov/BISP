@@ -96,16 +96,15 @@
 
         if (_form.IsValid)
         {
-            var result = await AuthorizationService.Register(_model);
-
-            if (result.Successful)
+            try
             {
+                await AuthorizationService.Register(_model);
                 SnackBar.Add("Registered!");
                 NavigationManager.NavigateTo("/login");
             }
-            else
+            catch (Exception e)
             {
-                SnackBar.Add("Something went wrong");
+                SnackBar.Add(e.Message, Severity.Error);
             }
         }
     }
