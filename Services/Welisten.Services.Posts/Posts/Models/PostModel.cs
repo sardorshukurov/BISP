@@ -16,7 +16,7 @@ public class PostModel
     public Guid? UserId { get; set; }
     public UserDto? User { get; set; }
     public required DateTime Date { get; set; }
-    public required ICollection<string> Topics { get; set; }
+    public required ICollection<TopicModel> Topics { get; set; }
     public int CommentCount { get; set; }
     public int LikeCount { get; set; }
 }
@@ -51,11 +51,11 @@ public class PostModelProfile : Profile
         }
     }
     
-    private class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<string>>
+    private class PostTopicsResolver : IValueResolver<Post, PostModel, ICollection<TopicModel>>
     {
-        public ICollection<string> Resolve(Post source, PostModel destination, ICollection<string> destMember, ResolutionContext context)
+        public ICollection<TopicModel> Resolve(Post source, PostModel destination, ICollection<TopicModel> destMember, ResolutionContext context)
         {
-            return context.Mapper.Map<ICollection<string>>(source.Topics.Select(x => x.Type));
+            return context.Mapper.Map<ICollection<TopicModel>>(source.Topics);
         }
     }
 }

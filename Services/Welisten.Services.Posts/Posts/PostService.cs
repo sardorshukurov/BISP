@@ -139,7 +139,11 @@ public class PostService : IPostService
 
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var post = await context.Posts.FirstOrDefaultAsync(x => x.Uid == id);
+            var post = await context.Posts
+                .Include(x => x.User)
+                .Include(x => x.PostCount)
+                .Include(x => x.Topics)
+                .FirstOrDefaultAsync(x => x.Uid == id);
 
             if (post == null)
                 throw new ProcessException($"Post with ID: {id} not found");
@@ -148,17 +152,23 @@ public class PostService : IPostService
                 throw new AuthenticationException("Authentication failed");
 
             context.Entry(post).State = EntityState.Modified;
+        
+            // Clear existing topics
+            post.Topics.Clear();
 
+            // Update other properties of the post
             post.Title = model.Title;
             post.Text = model.Text;
             post.IsAnonymous = model.IsAnonymous;
-            
+        
+            // Update topics
             post.Topics = await context.Topics
                 .Where(t => model.Topics.Contains(t.Uid))
                 .ToListAsync();
-
+        
             context.AttachRange(post.Topics);
-            
+        
+            // Save changes again to update the many-to-many relationship
             await context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -167,6 +177,7 @@ public class PostService : IPostService
             throw;
         }
     }
+
 
     public async Task Delete(Guid id, Guid userId)
     {

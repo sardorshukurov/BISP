@@ -1,5 +1,100 @@
-<h3>EditPost</h3>
+@using Welisten.Client.Models.Post
+@using Welisten.Client.Pages.Posts.Models
+@using Welisten.Client.Pages.Posts.Services
+
+@inject IPostService PostService;
+@inject ISnackbar Snackbar;
+
+<MudDialog Style="width: 50%; max-width: 600px">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1"/>
+            You are editing a post
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
+            <MudTextField @bind-Value="@_model.Title"
+                          For="@((() => _model.Title))"
+                          Label="Title"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"/>
+            <MudTextField @bind-Value="@_model.Text"
+                          For="@((() => _model.Text))"
+                          Label="Description"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          AutoGrow="true"/>
+            <MudCheckBox @bind-Value="@_model.IsAnonymous"
+                         For="@(() => _model.IsAnonymous)"
+                         Label="Post Anonymously?"/>
+            <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="Guid"
+                       Label="Topics" MultiSelection="true"
+                       @bind-SelectedValues="@_model.Topics"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense">
+                @foreach (TopicModel topic in _topics)
+                {
+                    <MudSelectItem T="Guid" Value="@topic.Id">@topic.Type</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="@((() => Save()))">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
 
 @code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Guid PostId { get; set; }
+    private bool _multiSelectionTextChoice;
+    private MudForm _form;
+    private UpdatePostModel _model = new UpdatePostModel();
+    private UpdatePostModelValidator _validator = new UpdatePostModelValidator();
+    private IEnumerable<TopicModel> _topics = [];
     
+    protected override async Task OnInitializedAsync()
+    {
+        PostModel model = await PostService.GetPostById(PostId);
+        _model = new UpdatePostModel()
+        {
+            Title = model.Title,
+            Text = model.Text,
+            IsAnonymous = model.IsAnonymous,
+            Topics = model.Topics.Select(x => x.Id)
+        };
+        _topics = await PostService.GetTopics();
+    }
+    
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (_multiSelectionTextChoice)
+        {
+            return $"Selected topic{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x))}";
+        }
+        else
+        {
+            return $"{selectedValues.Count} topic{(selectedValues.Count > 1 ? "s have":" has")} been selected";
+        }
+    }
+
+    private async void Save()
+    {
+        try
+        {
+            if (_form.IsValid)
+            {
+                await PostService.Update(PostId, _model);
+                Snackbar.Add("Post is updated", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(PostId));
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
 }

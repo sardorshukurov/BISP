@@ -132,9 +132,9 @@ public class PostController : ControllerBase
             {
                 return Unauthorized();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
         return Unauthorized();

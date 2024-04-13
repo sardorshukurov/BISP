@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Welisten.Client.Models.Post;
+using Welisten.Client.Pages.Posts.Models;
 
 namespace Welisten.Client.Pages.Posts.Services;
 
@@ -84,6 +85,20 @@ public class PostService(HttpClient httpClient) : IPostService
         {
             var content = await response.Content.ReadAsStringAsync();
             throw new Exception(content);
+        }
+    }
+
+    public async Task Update(Guid id, UpdatePostModel model)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        
+        var response = await httpClient.PutAsync($"v1/Post/{id}", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(errorContent);
         }
     }
 }

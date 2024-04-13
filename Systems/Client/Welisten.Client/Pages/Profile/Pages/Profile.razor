@@ -6,6 +6,7 @@
 @using Welisten.Client.Models.Post
 @using Welisten.Client.Pages.Comments.Models
 @using Welisten.Client.Pages.Comments.Services
+@using Welisten.Client.Pages.Posts.Components
 @using Welisten.Client.Pages.Posts.Services
 @using Welisten.Common.Extensions
 
@@ -52,7 +53,7 @@
                             <MudText Typo="Typo.body2">@post.Text</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
+                            <MudButton OnClick="@(() => UpdatePost(post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
                             <MudButton OnClick="@(() => DeletePost(post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
@@ -90,9 +91,17 @@
 
 
 @code {
+
+    #region Properties
+    
     private UserModel _model = new UserModel();
     private IEnumerable<PostModel> _posts = [];
     private IEnumerable<CommentModel> _comments = [];
+    
+    #endregion
+
+    
+    #region Post Actions
     
     private async void DeletePost(Guid postId)
     {
@@ -120,6 +129,24 @@
             }
         }
     }
+
+    private async void UpdatePost(Guid postId)
+    {
+        var parameters = new DialogParameters<_editPost>();
+        parameters.Add(x => x.PostId, postId);
+        
+        var dialog = DialogService.Show<_editPost>("Update", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            _posts = await PostService.GetPostsByUser();
+            StateHasChanged();
+        }
+    }
+    #endregion
+    
+    #region Comment Actions
     
     private async void DeleteComment(Guid commentId)
     {
@@ -147,6 +174,8 @@
             }
         }
     }
+    
+    #endregion
     
     protected override async Task OnInitializedAsync()
     {        
