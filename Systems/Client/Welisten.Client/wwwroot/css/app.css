@@ -101,3 +101,19 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+.common-card {
+    margin-bottom: 25px; 
+    margin-top: 25px;
+    max-width: 600px; 
+    border-radius: 1rem;
+}
+
+.clickable-card{
+    margin-top: 25px; 
+    margin-bottom: 25px; 
+    max-width: 600px; 
+    width: 50%;
+    border-radius: 1rem;
+    cursor: pointer
+}

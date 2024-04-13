@@ -19,6 +19,18 @@ public class CommentService(HttpClient httpClient) : ICommentService
         return await response.Content.ReadFromJsonAsync<IEnumerable<CommentModel>>() ?? new List<CommentModel>();
     }
 
+    public async Task<CommentModel> GetCommentById(Guid id)
+    {
+        var response = await httpClient.GetAsync($"v1/Comment/byId/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+
+        return (await response.Content.ReadFromJsonAsync<CommentModel>())!;
+    }
+
     public async Task<IEnumerable<CommentModel>> GetCommentsByUser()
     {
         var response = await httpClient.GetAsync("v1/Comment/byUser");
@@ -52,6 +64,20 @@ public class CommentService(HttpClient httpClient) : ICommentService
         {
             var content = await response.Content.ReadAsStringAsync();
             throw new Exception(content);
+        }
+    }
+
+    public async Task Update(Guid id, CreateCommentModel model)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PutAsync($"v1/Comment/{id}", content);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(errorContent);
         }
     }
 }

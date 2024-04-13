@@ -1,0 +1,67 @@
+@using Welisten.Client.Pages.Comments.Services
+@using Welisten.Client.Pages.Comments.Models
+
+@inject ICommentService CommentService;
+@inject ISnackbar Snackbar;
+
+<MudDialog Style="width: 50%; max-width: 600px">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1"/>
+            You are editing a post
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
+            <MudTextField @bind-Value="@_model.Text"
+                          For="@((() => _model.Text))"
+                          Label="Comment"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          AutoGrow="true"/>
+            <MudCheckBox @bind-Value="@_model.IsAnonymous"
+                         For="@(() => _model.IsAnonymous)"
+                         Label="Post Anonymously?"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@((() => Save()))">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Guid CommentId { get; set; }
+    private MudForm _form;
+    private CreateCommentModel _model = new CreateCommentModel();
+    private CreateCommentModelValidator _validator = new CreateCommentModelValidator();
+    
+    private async void Save()
+    {
+        try
+        {
+            if (_form.IsValid)
+            {
+                await CommentService.Update(CommentId, _model);
+                Snackbar.Add("Comment is updated", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(CommentId));
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        CommentModel model = await CommentService.GetCommentById(CommentId);
+        _model = new CreateCommentModel
+        {
+            PostId = model.PostId,
+            Text = model.Text,
+            IsAnonymous = model.IsAnonymous,
+        };
+    }
+}

@@ -38,6 +38,20 @@ public class CommentService : ICommentService
         return _mapper.Map<List<CommentModel>>(post.Comments);
     }
 
+    public async Task<CommentModel> GetCommentById(Guid id)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var comment = await context.Comments
+            .Include(c => c.Post)
+            .FirstOrDefaultAsync(c => c.Uid == id);
+
+        if (comment == null)
+            throw new InvalidOperationException($"Comment with ID {id} not found.");
+
+        return _mapper.Map<CommentModel>(comment);
+    }
+
     public async Task<IEnumerable<CommentModel>> GetCommentsByUser(Guid userId)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
@@ -69,7 +83,7 @@ public class CommentService : ICommentService
 
         // Error handling for post not found
         if (post == null)
-            throw new ProcessException($"Associated post not found for comment with ID: {comment.PostId}");
+            throw new InvalidOperationException($"Associated post not found for comment with ID: {comment.PostId}");
         
         context.Entry(post.PostCount).State = EntityState.Modified;
         post.PostCount.CommentCount++;
@@ -96,7 +110,7 @@ public class CommentService : ICommentService
         // Retrieve the comment
         var comment = await context.Comments.FirstOrDefaultAsync(x => x.Uid == id);
         if (comment == null)
-            throw new ProcessException($"Comment with ID: {id} not found");
+            throw new InvalidOperationException($"Comment with ID: {id} not found");
 
         // Check if the user is authorized to delete the comment
         if (comment.UserId != userId)
@@ -105,7 +119,7 @@ public class CommentService : ICommentService
         // Retrieve the associated post and update comment count
         var post = await context.Posts.Include(x => x.PostCount).FirstOrDefaultAsync(p => p.Id == comment.PostId);
         if (post == null)
-            throw new ProcessException($"Associated post not found for comment with ID: {id}");
+            throw new InvalidOperationException($"Associated post not found for comment with ID: {id}");
 
         // Remove the comment
         context.Comments.Remove(comment);
@@ -113,6 +127,26 @@ public class CommentService : ICommentService
         context.Entry(post.PostCount).State = EntityState.Modified;
         post.PostCount.CommentCount--;
         
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Update(Guid id, CreateCommentModel model)
+    {
+        await _createValidator.CheckAsync(model);
+
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var comment = await context.Comments.FirstOrDefaultAsync(c => c.Uid == id);
+
+        if (comment == null)
+            throw new InvalidOperationException($"Comment with ID: {id} not found");
+        
+        context.Entry(comment).State = EntityState.Modified;
+        
+        comment.Text = model.Text;
+        comment.IsAnonymous = model.IsAnonymous;
+
+        // Save changes
         await context.SaveChangesAsync();
     }
 }

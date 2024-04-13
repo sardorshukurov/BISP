@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Welisten.Client.Components
 @using Welisten.Client.Models.Post
+@using Welisten.Client.Pages.Comments.Components
 @using Welisten.Client.Pages.Comments.Models
 @using Welisten.Client.Pages.Comments.Services
 @using Welisten.Client.Pages.Posts.Components
@@ -72,7 +73,7 @@
                             <MudText Typo="Typo.body2">@comment.Text</MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
+                            <MudButton OnClick="@(() => UpdateComment(comment.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Edit"/></MudButton>
                             <MudButton OnClick="@(() => DeleteComment(comment.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Delete"/></MudButton>
                         </MudCardActions>
                     </MudCard>
@@ -172,6 +173,21 @@
             {
                 Snackbar.Add("Something went wrong", Severity.Error);
             }
+        }
+    }
+    
+    private async void UpdateComment(Guid commentId)
+    {
+        var parameters = new DialogParameters<_editComment>();
+        parameters.Add(x => x.CommentId, commentId);
+        
+        var dialog = DialogService.Show<_editComment>("Update", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            _comments = await CommentService.GetCommentsByUser();
+            StateHasChanged();
         }
     }
     

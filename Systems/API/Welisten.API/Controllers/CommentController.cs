@@ -61,9 +61,9 @@ public class CommentController : ControllerBase
                 await _commentService.Delete(id, userId);
                 return Ok();
             }
-            catch (ProcessException)
+            catch (InvalidOperationException e)
             {
-                return NotFound("Comment not found");
+                return NotFound(e.Message);
             }
             catch (AuthenticationException)
             {
@@ -90,6 +90,44 @@ public class CommentController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e, "Error occurred while fetching comments for post with ID: {Id}", id);
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "An unexpected error occurred. Please try again later.");
+        }
+    }
+
+    [Authorize]
+    [HttpGet("byId/{id}")]
+    public async Task<IActionResult> GetCommentById([FromRoute] Guid id)
+    {
+        try
+        {
+            return Ok(await _commentService.GetCommentById(id));
+        }
+        catch (InvalidOperationException e)
+        {
+            _logger.Warning(e, "Comment not found with ID: {id}", id);
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Error occurred while fetching comment with ID: {Id}", id);
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "An unexpected error occurred. Please try again later.");
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromRoute] Guid id, CreateCommentModel model)
+    {
+        try
+        {
+            await _commentService.Update(id, model);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Error occurred while updating comment with ID: {Id}", id);
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred. Please try again later.");
         }
