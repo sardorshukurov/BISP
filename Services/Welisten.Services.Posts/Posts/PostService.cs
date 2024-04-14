@@ -152,23 +152,40 @@ public class PostService : IPostService
                 throw new AuthenticationException("Authentication failed");
 
             context.Entry(post).State = EntityState.Modified;
-        
-            // Clear existing topics
-            post.Topics.Clear();
+            context.AttachRange(post.Topics);
 
             // Update other properties of the post
             post.Title = model.Title;
             post.Text = model.Text;
             post.IsAnonymous = model.IsAnonymous;
-        
+
             // Update topics
-            post.Topics = await context.Topics
-                .Where(t => model.Topics.Contains(t.Uid))
-                .ToListAsync();
-        
-            context.AttachRange(post.Topics);
-        
-            // Save changes again to update the many-to-many relationship
+            var existingTopicIds = post.Topics.Select(t => t.Uid).ToList();
+            var newTopicIds = model.Topics;
+
+            // Remove topics that are not in the new list
+            foreach (var topic in post.Topics.ToList())
+            {
+                if (!newTopicIds.Contains(topic.Uid))
+                {
+                    post.Topics.Remove(topic);
+                }
+            }
+            
+            // Add new topics
+            foreach (var topicId in newTopicIds)
+            {
+                if (!existingTopicIds.Contains(topicId))
+                {
+                    var topic = await context.Topics.FirstOrDefaultAsync(t => t.Uid == topicId);
+                    if (topic != null)
+                    {
+                        post.Topics.Add(topic);
+                    }
+                }
+            }
+            
+            // Save changes to update the post entity
             await context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -177,6 +194,7 @@ public class PostService : IPostService
             throw;
         }
     }
+
 
 
     public async Task Delete(Guid id, Guid userId)
