@@ -18,8 +18,8 @@
             <MudText Typo="Typo.subtitle2">@_post.Date.ToLocalTime().FormatDate()</MudText>
         </MudContainer>
         
-        <MudText Typo="Typo.h6">@_post.Title</MudText>
-        <MudText Typo="Typo.body2">@_post.Text</MudText>
+        <MudText Typo="Typo.h6" Style="overflow-wrap: break-word;">@_post.Title</MudText>
+        <MudText Typo="Typo.body2" Style="overflow-wrap: break-word;">@_post.Text</MudText>
     </MudCardContent>
     <MudCardActions>
         <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@(() => @LikeOrDisLike(@_post.Id))"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@_post.LikeCount</MudButton>
@@ -59,7 +59,7 @@
                 <MudText Typo="Typo.subtitle2">@comment.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
         
-            <MudText Typo="Typo.body2">@comment.Text</MudText>
+            <MudText Typo="Typo.body2" Style="overflow-wrap: break-word;">@comment.Text</MudText>
         </MudCardContent>
     </MudCard>
 }
@@ -118,6 +118,7 @@
                 await CommentService.Comment(_model);
                 _comments = await CommentService.GetComments(PostId);
                 Snackbar.Add("Comment is added!");
+                _model = new CreateCommentModel();
             }
             catch (Exception e)
             {

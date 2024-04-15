@@ -11,16 +11,16 @@
 
 @foreach (var post in _posts)
 {
-    <MudCard Width="50%" Square="false" Outlined="true" 
-             Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
+    <MudCard @onclick="@(() => @NavManager.NavigateTo($"/posts/{post.Id}"))" Width="50%" Square="false" Outlined="true" 
+             Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
                 <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : $"@{post.User.Name}")</MudText>
                 <MudText Typo="Typo.subtitle2">@post.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
             
-            <MudText Typo="Typo.h6">@post.Title</MudText>
-            <MudText Typo="Typo.body2">@post.Text</MudText>
+            <MudText Typo="Typo.h6" Style="overflow-wrap: break-word;">@post.Title</MudText>
+            <MudText Typo="Typo.body2" Style="overflow-wrap: break-word;">@post.Text</MudText>
         </MudCardContent>
         <MudCardActions>
             <MudButton OnClick="@(() => @LikeOrDisLike(@post.Id))" Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@post.LikeCount</MudButton>
