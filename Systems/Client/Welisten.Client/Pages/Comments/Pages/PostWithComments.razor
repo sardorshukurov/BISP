@@ -11,7 +11,7 @@
 @inject ISnackbar Snackbar;
 
 <MudCard Width="50%" Square="false" Outlined="true" 
-         Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
+         Style="margin-bottom:50px; max-width: 600px; min-width: 400px; border-radius: 1rem;">
     <MudCardContent Align="left">
         <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
             <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(_post.User == null ? "Anonymous" : $"@{_post.User.Name}")</MudText>

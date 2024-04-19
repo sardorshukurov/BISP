@@ -40,7 +40,7 @@
             </MudCardContent>
         </MudCard>
         
-        <MudTabs Elevation="4" Rounded="false" Centered="true" Color="@Color.Primary">
+        <MudTabs Elevation="4" Rounded="false" KeepPanelsAlive="false" Centered="true" Color="@Color.Primary">
             <MudTabPanel Text="My Posts">
                 @foreach (var post in _posts)
                 {

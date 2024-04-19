@@ -50,6 +50,21 @@ public class PostController : ControllerBase
 
         return Unauthorized();
     }
+
+    [AllowAnonymous]
+    [HttpGet("byTopics")]
+    public async Task<IActionResult> GetByTopics([FromQuery] IEnumerable<Guid> topicIds)
+    {
+        try
+        {
+            var posts = await _postService.GetByTopics(topicIds);
+            return Ok(posts);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while fetching posts by topics.");
+        }
+    }
     
     [AllowAnonymous]
     [HttpGet("{id:guid}")]

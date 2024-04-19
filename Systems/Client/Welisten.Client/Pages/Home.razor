@@ -9,10 +9,20 @@
 
 @layout MainLayout
 
+
+<MudButtonGroup Style="margin-bottom: 20px">
+    <MudButton OnClick="(() => ReloadData())">All</MudButton>
+    @foreach (var topic in _topics)
+    {
+        <MudCheckBox T="bool" ValueChanged="(() => HandleTopicSelection(topic.Id))"
+                     Style="padding-right: 20px"> @topic.Type </MudCheckBox>
+    }
+</MudButtonGroup>
+
 @foreach (var post in _posts)
 {
     <MudCard @onclick="@(() => @NavManager.NavigateTo($"/posts/{post.Id}"))" Width="50%" Square="false" Outlined="true" 
-             Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem; cursor: pointer">
+             Style="margin-bottom:50px; max-width: 600px; min-width: 400px; border-radius: 1rem; cursor: pointer">
         <MudCardContent Align="left">
             <MudContainer Style="padding:0; display: flex; justify-content: space-between; margin-bottom: 10px">
                 <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : $"@{post.User.Name}")</MudText>
@@ -39,6 +49,9 @@
 @code{
 
     private IEnumerable<PostModel> _posts = [];
+    private IEnumerable<TopicModel> _topics = [];
+    private IEnumerable<Guid> _chosenTopics = [];
+    private HashSet<Guid> _selectedTopicIds = [];
 
     private async Task ReloadData()
     {
@@ -70,12 +83,42 @@
             Snackbar.Add("Something went wrong", Severity.Error);
         }
     }
+
+    private async Task GetPostsByTopic()
+    {
+        try
+        {
+            _posts = await PostService.GetPostsByTopics(_selectedTopicIds);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {
         try
         {
             await ReloadData();
+            _topics = await PostService.GetTopics();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+        }
+    }
+
+    private async Task HandleTopicSelection(Guid topicId)
+    {
+        if (!_selectedTopicIds.Add(topicId))
+        {
+            _selectedTopicIds.Remove(topicId);
+        }
+
+        try
+        {
+            _posts = await PostService.GetPostsByTopics(_selectedTopicIds);
         }
         catch (Exception)
         {

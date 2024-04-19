@@ -64,6 +64,24 @@ public class PostService : IPostService
         return result;
     }
 
+    public async Task<IEnumerable<PostModel>> GetByTopics(IEnumerable<Guid> topicIds)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        
+        var posts = await context.Posts
+            .Include(x => x.User)
+            .Include(x => x.PostCount)
+            .Include(x => x.Topics)
+            .OrderByDescending(x => x.Date)
+            .Where(x => 
+                x.Topics.Any(t => topicIds.Contains(t.Uid)))
+            .ToListAsync();
+        
+        var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
+        
+        return result;
+    }
+
     public async Task<PostModel> GetById(Guid id)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();

@@ -30,6 +30,18 @@ public class PostService(HttpClient httpClient) : IPostService
         return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? new List<PostModel>();
     }
 
+    public async Task<IEnumerable<PostModel>> GetPostsByTopics(IEnumerable<Guid> topicIds)
+    {
+        var queryString = string.Join("&", topicIds.Select(id => $"topicIds={id}"));
+        var response = await httpClient.GetAsync($"v1/Post/byTopics?{queryString}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? new List<PostModel>();
+    }
+
     public async Task<IEnumerable<TopicModel>> GetTopics()
     {
         var response = await httpClient.GetAsync("v1/Topic");
