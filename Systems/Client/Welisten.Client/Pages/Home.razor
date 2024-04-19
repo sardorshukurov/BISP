@@ -18,7 +18,13 @@
                 <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(post.User == null ? "Anonymous" : $"@{post.User.Name}")</MudText>
                 <MudText Typo="Typo.subtitle2">@post.Date.ToLocalTime().FormatDate()</MudText>
             </MudContainer>
-            
+            <MudContainer Style="padding: 0; display: flex;">
+                @foreach (var topic in post.Topics)
+                {
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Style="padding-right: 5px">@topic.Type.ToLower()</MudText>
+                }
+            </MudContainer>
+            <MudDivider Style="padding-bottom: 15px"/>
             <MudText Typo="Typo.h6" Style="overflow-wrap: break-word;">@post.Title</MudText>
             <MudText Typo="Typo.body2" Style="overflow-wrap: break-word;">@post.Text</MudText>
         </MudCardContent>

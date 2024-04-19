@@ -17,7 +17,13 @@
             <MudText Color="Color.Primary" Typo="Typo.subtitle2">@(_post.User == null ? "Anonymous" : $"@{_post.User.Name}")</MudText>
             <MudText Typo="Typo.subtitle2">@_post.Date.ToLocalTime().FormatDate()</MudText>
         </MudContainer>
-        
+        <MudContainer Style="padding: 0; display: flex;">
+            @if(_post.Topics is not null)foreach (var topic in _post.Topics)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Style="padding-right: 5px">@topic.Type.ToLower()</MudText>
+            }
+        </MudContainer>
+        <MudDivider Style="padding-bottom: 15px"/>
         <MudText Typo="Typo.h6" Style="overflow-wrap: break-word;">@_post.Title</MudText>
         <MudText Typo="Typo.body2" Style="overflow-wrap: break-word;">@_post.Text</MudText>
     </MudCardContent>
@@ -25,28 +31,29 @@
         <MudButton Variant="Variant.Text" Color="Color.Dark" OnClick="@(() => @LikeOrDisLike(@_post.Id))"><MudIcon Icon="@Icons.Material.Rounded.AddReaction"/>@_post.LikeCount</MudButton>
         <MudButton Variant="Variant.Text" Color="Color.Dark"><MudIcon Icon="@Icons.Material.Rounded.Comment"/>@_post.CommentCount</MudButton>
     </MudCardActions>
+    <AuthorizeView>
+        <Authorized>
+            @* <MudCard Width="50%" Square="false" Outlined="true"  *@
+            @*          Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;"> *@            
+                <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)">
+                    <MudCardContent>
+                        <MudTextField @bind-Value="@_model.Text"
+                                      For="@((() => _model.Text))"
+                                      Immediate="true"
+                                      Label="Comment"
+                                      AutoGrow="true"/>
+                        <MudCheckBox @bind-Value="@_model.IsAnonymous"
+                                     For="@(() => _model.IsAnonymous)"
+                                     Label="Post Anonymously?"/>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Comment</MudButton>
+                    </MudCardContent>
+                </MudForm>
+            @* </MudCard> *@
+        </Authorized>
+    </AuthorizeView>
 </MudCard>
 
-<AuthorizeView>
-    <Authorized>
-        <MudCard Width="50%" Square="false" Outlined="true" 
-                 Style="margin-bottom:50px; max-width: 600px; border-radius: 1rem;">
-            <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)">
-                <MudCardContent>
-                    <MudTextField @bind-Value="@_model.Text"
-                                  For="@((() => _model.Text))"
-                                  Immediate="true"
-                                  Label="Comment"
-                                  AutoGrow="true"/>
-                    <MudCheckBox @bind-Value="@_model.IsAnonymous"
-                                 For="@(() => _model.IsAnonymous)"
-                                 Label="Post Anonymously?"/>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Comment</MudButton>
-                </MudCardContent>
-            </MudForm>
-        </MudCard>
-    </Authorized>
-</AuthorizeView>
+
 
 <MudText Color="Color.Primary" Typo="Typo.h6" Align="Align.Center">Comments</MudText>
 @foreach (var comment in _comments)
