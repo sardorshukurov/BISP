@@ -45,13 +45,23 @@ public static class DbSeeder
         
         if (!await context.Topics.AnyAsync())
         {
-            await context.Topics.AddRangeAsync(new DemoHelper().Topics);
+            await context.Topics.AddRangeAsync(DemoHelper.Topics);
+            await context.SaveChangesAsync();
+        }
+
+        if (!await context.EventTypes.AnyAsync())
+        {
+            await context.EventTypes.AddRangeAsync(DemoHelper.Events);
+            await context.SaveChangesAsync();
+        }
+
+        if (!await context.Moods.AnyAsync())
+        {
+            await context.Moods.AddRangeAsync(DemoHelper.Moods);
             await context.SaveChangesAsync();
         }
         
         await AddAdmin(serviceProvider);
-
-        return;
     }
 
     private static async Task AddAdmin(IServiceProvider serviceProvider)
