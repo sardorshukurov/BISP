@@ -44,7 +44,7 @@ public class MoodRecordProfile : Profile
     {
         public ICollection<EventModel> Resolve(MoodRecord source, MoodRecordModel destination, ICollection<EventModel> destMember, ResolutionContext context)
         {
-            return context.Mapper.Map<ICollection<EventModel>>(source.Event);
+            return context.Mapper.Map<ICollection<EventModel>>(source.Events);
         }
     }
 }

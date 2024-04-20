@@ -82,7 +82,7 @@ public class PostService : IPostService
         return result;
     }
 
-    public async Task<PostModel> GetById(Guid id)
+    public async Task<PostModel?> GetById(Guid id)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
 
@@ -92,7 +92,7 @@ public class PostService : IPostService
             .Include(x => x.Topics)
             .FirstOrDefaultAsync(x => x.Uid == id);
 
-        var result = _mapper.Map<Post, PostModel>(post);
+        var result = _mapper.Map<Post?, PostModel?>(post);
 
         return result;
     }

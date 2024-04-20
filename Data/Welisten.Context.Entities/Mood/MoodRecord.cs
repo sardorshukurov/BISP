@@ -8,5 +8,5 @@ public class MoodRecord : BaseEntity
     public virtual required Mood Mood { get; set; }
     public Guid UserId { get; set; }
     public virtual required User User { get; set; }
-    public virtual required ICollection<EventType> Event { get; set; }
+    public virtual required ICollection<EventType> Events { get; set; }
 }

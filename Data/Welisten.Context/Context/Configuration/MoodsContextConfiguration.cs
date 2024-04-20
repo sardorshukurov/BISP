@@ -22,7 +22,7 @@ public static class MoodRecordContextConfiguration
             .IsRequired();
 
         modelBuilder.Entity<MoodRecord>()
-            .HasMany(x => x.Event)
+            .HasMany(x => x.Events)
             .WithMany()
             .UsingEntity(j => j.ToTable("MoodRecordEvents"));
     }
