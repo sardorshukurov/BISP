@@ -56,4 +56,9 @@ public class MoodService : IMoodService
 
         return _mapper.Map<MoodRecord?, MoodRecordModel?>(moodRecord);
     }
+
+    public Task CreateMoodRecord(CreateMoodRecordModel model, Guid userId)
+    {
+        throw new NotImplementedException();
+    }
 }

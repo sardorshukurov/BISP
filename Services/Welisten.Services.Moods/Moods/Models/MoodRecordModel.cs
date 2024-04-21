@@ -6,6 +6,7 @@ namespace Welisten.Services.Moods;
 public class MoodRecordModel
 {
     public Guid Id { get; set; }
+    public string Text { get; set; } = string.Empty;
     public DateTime Date { get; set; } = DateTime.Today;
     public MoodModel? Mood { get; set; }
     public Guid UserId { get; set; }
@@ -23,6 +24,8 @@ public class MoodRecordProfile : Profile
         CreateMap<MoodRecord, MoodRecordModel>()
             .ForMember(dest => dest.Id, opt =>
                 opt.MapFrom(src => src.Uid))
+            .ForMember(dest => dest.Text, opt =>
+                opt.MapFrom(src => src.Text))
             .ForMember(dest => dest.UserId, opt =>
                 opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.User, opt =>

@@ -33,4 +33,10 @@ public static class ValidationRuleExtensions
         return ruleBuilder
             .NotEmpty().WithMessage("User is required");
     }
+    
+    public static IRuleBuilderOptions<T, string> MoodRecordText<T>(this IRuleBuilder<T, string> ruleBuilder)
+    {
+        return ruleBuilder
+            .MaximumLength(1000).WithMessage("Maximum of mood record text length is 1000");
+    }
 }
