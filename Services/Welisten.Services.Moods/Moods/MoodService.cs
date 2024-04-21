@@ -1,21 +1,24 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Welisten.Common.Validator;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
-using Welisten.Services.Logger.Logger;
 
 namespace Welisten.Services.Moods;
 
 public class MoodService : IMoodService
 {
     private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
+    private readonly IModelValidator<CreateMoodRecordModel> _createValidator;
+    
     private readonly IMapper _mapper;
 
     public MoodService(IDbContextFactory<MainDbContext> dbContextFactory,
-        IMapper mapper)
+        IMapper mapper, IModelValidator<CreateMoodRecordModel> createValidator)
     {
         _dbContextFactory = dbContextFactory;
         _mapper = mapper;
+        _createValidator = createValidator;
     }
     
     public async Task<IEnumerable<MoodModel>> GetAllMoods()
@@ -42,6 +45,17 @@ public class MoodService : IMoodService
         return _mapper.Map<IEnumerable<MoodRecord>, IEnumerable<MoodRecordModel>>(moodRecords);
     }
 
+    public async Task<IEnumerable<EventModel>> GetAllEvents()
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var events = await context.EventTypes.ToListAsync();
+
+        var result = _mapper.Map<IEnumerable<EventType>, IEnumerable<EventModel>>(events);
+        
+        return result;
+    }
+
     public async Task<MoodRecordModel?> GetMoodRecordById(Guid moodRecordId, Guid userId)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
@@ -57,8 +71,23 @@ public class MoodService : IMoodService
         return _mapper.Map<MoodRecord?, MoodRecordModel?>(moodRecord);
     }
 
-    public Task CreateMoodRecord(CreateMoodRecordModel model, Guid userId)
+    public async Task CreateMoodRecord(CreateMoodRecordModel model, Guid userId)
     {
-        throw new NotImplementedException();
+        await _createValidator.CheckAsync(model);
+
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var moodRecord = _mapper.Map<MoodRecord>(model);
+        
+        if (moodRecord.Date.Kind == DateTimeKind.Local) 
+            moodRecord.Date = moodRecord.Date.ToUniversalTime();
+
+        moodRecord.UserId = userId;
+
+        context.Attach(moodRecord.Mood);
+        context.Attach(moodRecord.Event);
+
+        await context.MoodRecords.AddAsync(moodRecord);
+        await context.SaveChangesAsync();
     }
 }

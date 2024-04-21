@@ -31,6 +31,7 @@ public class MoodController : ControllerBase
     {
         try
         {
+            if (!await IsEligible()) return Unauthorized();
             return Ok(await _moodService.GetAllMoods());
         }
         catch (Exception e)
@@ -64,6 +65,21 @@ public class MoodController : ControllerBase
         }
     }
 
+    [HttpGet("events")]
+    public async Task<IActionResult> GetAllEvents()
+    {
+        try
+        {
+            if (!await IsEligible()) return Unauthorized();
+            return Ok(await _moodService.GetAllEvents());
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500, "An error occurred while retrieving events.");
+        }
+    }
+    
     [HttpGet("moodRecords/{id:guid}")]
     public async Task<IActionResult> GetMoodRecordById([FromRoute]Guid id)
     {
@@ -91,6 +107,30 @@ public class MoodController : ControllerBase
         }
     }
 
+    [HttpPost("")]
+    public async Task<IActionResult> Create(CreateMoodRecordModel request)
+    {
+        try
+        {
+            if (!await IsEligible()) return Unauthorized();
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            {
+                await _moodService.CreateMoodRecord(request, userId);
+                return Ok();
+            }
+
+            return Unauthorized();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500, $"An error occurred while creating mood.");
+        }
+    }
+    
     private async Task<bool> IsEligible()
     {
         if (!await _userService.Exists(User))
