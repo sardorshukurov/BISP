@@ -115,6 +115,7 @@ public class MoodService : IMoodService
 
         moodRecord.Mood = await context.Moods.FirstAsync(m => m.Uid == model.MoodId);
         moodRecord.Event = await context.EventTypes.FirstAsync(e => e.Uid == model.EventId);
+        moodRecord.Date = model.Date;
         
         await context.SaveChangesAsync();
 
