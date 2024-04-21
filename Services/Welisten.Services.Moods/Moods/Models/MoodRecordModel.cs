@@ -10,7 +10,7 @@ public class MoodRecordModel
     public MoodModel? Mood { get; set; }
     public Guid UserId { get; set; }
     public UserDto? User { get; set; }
-    public ICollection<EventModel> Events { get; set; } = [];
+    public EventModel? Event { get; set; }
 }
 
 public class MoodRecordProfile : Profile
@@ -27,7 +27,7 @@ public class MoodRecordProfile : Profile
                 opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.User, opt =>
                 opt.MapFrom<MoodRecordUserResolver>())
-            .ForMember(dest => dest.Events, opt =>
+            .ForMember(dest => dest.Event, opt =>
                 opt.MapFrom<MoodRecordEventResolver>());
     }
 
@@ -40,11 +40,11 @@ public class MoodRecordProfile : Profile
         }
     }
     
-    private class MoodRecordEventResolver : IValueResolver<MoodRecord, MoodRecordModel, ICollection<EventModel>>
+    private class MoodRecordEventResolver : IValueResolver<MoodRecord, MoodRecordModel, EventModel>
     {
-        public ICollection<EventModel> Resolve(MoodRecord source, MoodRecordModel destination, ICollection<EventModel> destMember, ResolutionContext context)
+        public EventModel Resolve(MoodRecord source, MoodRecordModel destination, EventModel destMember, ResolutionContext context)
         {
-            return context.Mapper.Map<ICollection<EventModel>>(source.Events);
+            return context.Mapper.Map<EventModel>(source.Event);
         }
     }
 }

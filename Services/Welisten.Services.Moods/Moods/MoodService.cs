@@ -9,16 +9,12 @@ namespace Welisten.Services.Moods;
 public class MoodService : IMoodService
 {
     private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
-
-    private readonly IAppLogger _logger;
     private readonly IMapper _mapper;
 
     public MoodService(IDbContextFactory<MainDbContext> dbContextFactory,
-        IAppLogger logger,
         IMapper mapper)
     {
         _dbContextFactory = dbContextFactory;
-        _logger = logger;
         _mapper = mapper;
     }
     
@@ -37,7 +33,7 @@ public class MoodService : IMoodService
 
         var moodRecords = await context.MoodRecords
             .Include(mr => mr.Mood)
-            .Include(mr => mr.Events)
+            .Include(mr => mr.Event)
             .Include(mr => mr.User)
             .OrderByDescending(mr => mr.Date)
             .Where(mr => mr.UserId == userId)
@@ -52,7 +48,7 @@ public class MoodService : IMoodService
 
         var moodRecord = await context.MoodRecords
             .Include(mr => mr.Mood)
-            .Include(mr => mr.Events)
+            .Include(mr => mr.Event)
             .Include(mr => mr.User)
             .OrderByDescending(mr => mr.Date)
             .Where(mr => mr.UserId == userId)
