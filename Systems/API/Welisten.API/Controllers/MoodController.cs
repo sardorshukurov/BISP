@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
@@ -127,7 +128,34 @@ public class MoodController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, $"An error occurred while creating mood.");
+            return StatusCode(500, $"An error occurred while creating mood record.");
+        }
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update([FromRoute] Guid id, CreateMoodRecordModel request)
+    {
+        try
+        {
+            if (!await IsEligible()) return Unauthorized();
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Ok(await _moodService.UpdateMoodRecord(id, request, userId));
+            }
+
+            return Unauthorized();
+        }
+        catch (AuthenticationException)
+        {
+            return Unauthorized();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500, $"An error occurred while updating mood record.");
         }
     }
     

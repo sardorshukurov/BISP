@@ -1,5 +1,7 @@
+using System.Security.Authentication;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Welisten.Common.Exceptions;
 using Welisten.Common.Validator;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
@@ -89,5 +91,39 @@ public class MoodService : IMoodService
 
         await context.MoodRecords.AddAsync(moodRecord);
         await context.SaveChangesAsync();
+    }
+
+    public async Task<MoodRecordModel> UpdateMoodRecord(Guid id, CreateMoodRecordModel model, Guid userId)
+    {
+        await _createValidator.CheckAsync(model);
+
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+        var moodRecord = await context.MoodRecords
+            .Include(mr => mr.Event)
+            .Include(mr => mr.User)
+            .Include(mr => mr.Mood)
+            .FirstOrDefaultAsync(mr => mr.Uid == id);
+
+        if (moodRecord == null)
+            throw new ProcessException($"Mood record with ID: {id} not found");
+
+        if (moodRecord.UserId != userId)
+            throw new AuthenticationException("Authentication  failed");
+
+        context.Entry(moodRecord).State = EntityState.Modified;
+
+        moodRecord.Mood = await context.Moods.FirstAsync(m => m.Uid == model.MoodId);
+        moodRecord.Event = await context.EventTypes.FirstAsync(e => e.Uid == model.EventId);
+        
+        await context.SaveChangesAsync();
+
+        var updatedMoodRecord = await context.MoodRecords
+            .Include(mr => mr.Event)
+            .Include(mr => mr.User)
+            .Include(mr => mr.Mood)
+            .FirstAsync(mr => mr.Uid == id);
+        
+        return _mapper.Map<MoodRecord, MoodRecordModel>(updatedMoodRecord);
     }
 }
