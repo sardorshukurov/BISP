@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
-using Welisten.Services.Logger.Logger;
 
 namespace Welisten.Services.Moods;
 
