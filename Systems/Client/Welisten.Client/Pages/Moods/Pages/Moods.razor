@@ -1,4 +1,5 @@
 @page "/moods"
+@using Microsoft.AspNetCore.Components.Authorization
 @using Welisten.Client.Pages.Moods.Services
 @using Welisten.Client.Pages.Moods.Models
 @using Welisten.Client.Pages.Moods.Components
@@ -6,36 +7,46 @@
 @inject IMoodService MoodService;
 @inject ISnackbar Snackbar;
 @inject IDialogService DialogService;
+@inject NavigationManager NavManager
 
+<AuthorizeView>
+    <Authorized>
+        <MudButton OnClick="@(() => CreateEditMoodRecord())" Variant="Variant.Filled" 
+                   Color="Color.Success" Style="margin-bottom: 15px"><MudIcon Icon="@Icons.Material.Rounded.Add"/> Share your mood!</MudButton>
+        
+        
+        <h3>Your mood records</h3>
+        
+        @foreach (var mood in _moodRecords)
+        {
+            <div style="display: flex; justify-content: center; vertical-align: top">
+                <MudCard Width="25%" Square="false" Outlined="true"
+                         Style="margin: 10px 0px 10px 0px; min-width: 300px; border-radius: 1rem">
+                    <MudCardContent>
+                        <MudContainer Style="padding: 0; display: flex; justify-content: space-between;">
+                            <MudText Typo="Typo.subtitle2">@mood.Mood.ImageLink @mood.Mood.Name – @mood.Event.Name</MudText>
+                            <MudText Typo="Typo.subtitle2">@mood.Date.ToLocalTime().ToString("dd/MM/yyyy")</MudText>
+                        </MudContainer>
+                        <MudContainer>
+                            <MudText Typo="Typo.body2" Style="padding: 0; overflow-wrap: break-word" Align="Align.Left">@mood.Text</MudText>
+                        </MudContainer>
+                    </MudCardContent>
+                </MudCard>
+                <MudButton OnClick="@(() => CreateEditMoodRecord(@mood.Id))" Size="Size.Small"
+                           Variant="Variant.Text">
+                    <MudIcon Icon="@Icons.Material.Rounded.Edit"/>
+                </MudButton>
+            </div>
+        
+        } 
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavManager.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
 
-<MudButton OnClick="@(() => CreateEditMoodRecord())" Variant="Variant.Filled" 
-           Color="Color.Success" Style="margin-bottom: 15px"><MudIcon Icon="@Icons.Material.Rounded.Add"/> Share your mood!</MudButton>
-
-
-<h3>Your mood records</h3>
-
-@foreach (var mood in _moodRecords)
-{
-    <div style="display: flex; justify-content: center; vertical-align: top">
-        <MudCard Width="25%" Square="false" Outlined="true"
-                 Style="margin: 10px 0px 10px 0px; min-width: 300px; border-radius: 1rem">
-            <MudCardContent>
-                <MudContainer Style="padding: 0; display: flex; justify-content: space-between;">
-                    <MudText Typo="Typo.subtitle2">@mood.Mood.ImageLink @mood.Mood.Name – @mood.Event.Name</MudText>
-                    <MudText Typo="Typo.subtitle2">@mood.Date.ToLocalTime().ToString("dd/MM/yyyy")</MudText>
-                </MudContainer>
-                <MudContainer>
-                    <MudText Typo="Typo.body2" Style="padding: 0; overflow-wrap: break-word" Align="Align.Left">@mood.Text</MudText>
-                </MudContainer>
-            </MudCardContent>
-        </MudCard>
-        <MudButton OnClick="@(() => CreateEditMoodRecord(@mood.Id))" Size="Size.Small"
-                   Variant="Variant.Text">
-            <MudIcon Icon="@Icons.Material.Rounded.Edit"/>
-        </MudButton>
-    </div>
-
-} 
 @code {
     #region Properties
 

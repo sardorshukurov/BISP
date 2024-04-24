@@ -22,6 +22,7 @@ public class TopicController : ControllerBase
         _userService = userService;
     }
 
+    [AllowAnonymous]
     [HttpGet("")]
     public async Task<IEnumerable<TopicModel>> GetAll()
     {

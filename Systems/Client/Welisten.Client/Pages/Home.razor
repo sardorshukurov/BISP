@@ -10,12 +10,12 @@
 @layout MainLayout
 
 
-<MudButtonGroup Style="margin-bottom: 20px">
-    <MudButton OnClick="(() => ReloadData())">All</MudButton>
+<MudButtonGroup Variant="Variant.Filled" Color="Color.Dark" Style="margin-bottom: 20px">
+    <MudButton OnClick="@(() => ReloadData())">All</MudButton>
     @foreach (var topic in _topics)
     {
-        <MudCheckBox T="bool" ValueChanged="(() => HandleTopicSelection(topic.Id))"
-                     Style="padding-right: 20px"> @topic.Type </MudCheckBox>
+        <MudButton T="bool" OnClick="@(() => GetPostsByTopic(topic.Id))"
+                     Style="padding-right: 20px"> @topic.Type </MudButton>
     }
 </MudButtonGroup>
 
@@ -50,8 +50,6 @@
 
     private IEnumerable<PostModel> _posts = [];
     private IEnumerable<TopicModel> _topics = [];
-    private IEnumerable<Guid> _chosenTopics = [];
-    private HashSet<Guid> _selectedTopicIds = [];
 
     private async Task ReloadData()
     {
@@ -84,11 +82,11 @@
         }
     }
 
-    private async Task GetPostsByTopic()
+    private async Task GetPostsByTopic(Guid topicId)
     {
         try
         {
-            _posts = await PostService.GetPostsByTopics(_selectedTopicIds);
+            _posts = await PostService.GetPostsByTopics(new Guid[]{topicId});
         }
         catch (Exception e)
         {
@@ -102,23 +100,6 @@
         {
             await ReloadData();
             _topics = await PostService.GetTopics();
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Something went wrong", Severity.Error);
-        }
-    }
-
-    private async Task HandleTopicSelection(Guid topicId)
-    {
-        if (!_selectedTopicIds.Add(topicId))
-        {
-            _selectedTopicIds.Remove(topicId);
-        }
-
-        try
-        {
-            _posts = await PostService.GetPostsByTopics(_selectedTopicIds);
         }
         catch (Exception)
         {
