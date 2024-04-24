@@ -70,4 +70,19 @@ public class MoodService(HttpClient httpClient) : IMoodService
             throw new Exception(registerResult.ErrorDescription);
         }
     }
+
+    public async Task UpdateMoodRecord(Guid id, CreateMoodRecordModel model)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PutAsync($"v1/Mood/{id}", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            var registerResult = JsonSerializer.Deserialize<RequestResult>(errorContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new RequestResult();
+            throw new Exception(registerResult.ErrorDescription);
+        }
+    }
 }

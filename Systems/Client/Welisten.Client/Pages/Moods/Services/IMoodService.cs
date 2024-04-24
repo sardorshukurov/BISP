@@ -9,4 +9,5 @@ public interface IMoodService
     Task<IEnumerable<EventModel>> GetAllEvents();
     Task<MoodRecordModel?> GetMoodRecordById(Guid id);
     Task CreateMoodRecord(CreateMoodRecordModel model);
+    Task UpdateMoodRecord(Guid id, CreateMoodRecordModel model);
 }

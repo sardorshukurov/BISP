@@ -42,7 +42,7 @@
 </MudDialog>
 @code {
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
-    [Parameter] public Guid MoodRecordId { get; set; } = Guid.Empty;
+    [Parameter] public Guid? MoodRecordId { get; set; } = null;
     [Parameter] public string TitleText { get; set; } = string.Empty;
     private MudForm _form;
     private CreateMoodRecordModel _model = new CreateMoodRecordModel();
@@ -57,9 +57,14 @@
         {
             if (!_form.IsValid) return;
             
-            if (MoodRecordId == Guid.Empty)
+            if (MoodRecordId == null)
             {
                 await MoodService.CreateMoodRecord(_model);
+                MudDialog.Close(DialogResult.Ok(_model));
+            }
+            else
+            {
+                await MoodService.UpdateMoodRecord((Guid)MoodRecordId, _model);
                 MudDialog.Close(DialogResult.Ok(_model));
             }
         }
@@ -70,9 +75,9 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        if (MoodRecordId != Guid.Empty)
+        if (MoodRecordId != null)
         {
-            MoodRecordModel model = await MoodService.GetMoodRecordById(MoodRecordId) ?? throw new Exception("Not found");
+            MoodRecordModel model = await MoodService.GetMoodRecordById((Guid)MoodRecordId) ?? throw new Exception("Not found");
 
             _model.Text = model.Text;
             _model.Date = model.Date;

@@ -113,6 +113,7 @@ public class MoodService : IMoodService
 
         context.Entry(moodRecord).State = EntityState.Modified;
 
+        moodRecord.Text = model.Text;
         moodRecord.Mood = await context.Moods.FirstAsync(m => m.Uid == model.MoodId);
         moodRecord.Event = await context.EventTypes.FirstAsync(e => e.Uid == model.EventId);
         moodRecord.Date = model.Date;
