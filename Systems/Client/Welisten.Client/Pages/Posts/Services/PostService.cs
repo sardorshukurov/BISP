@@ -16,7 +16,7 @@ public class PostService(HttpClient httpClient) : IPostService
             var content = await response.Content.ReadAsStringAsync();
             throw new Exception(content);
         }
-        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? new List<PostModel>();
+        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? [];
     }
 
     public async Task<IEnumerable<PostModel>> GetPostsByUser()
@@ -27,7 +27,7 @@ public class PostService(HttpClient httpClient) : IPostService
             var content = await response.Content.ReadAsStringAsync();
             throw new Exception(content);
         }
-        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? new List<PostModel>();
+        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? [];
     }
 
     public async Task<IEnumerable<PostModel>> GetPostsByTopics(IEnumerable<Guid> topicIds)
@@ -39,7 +39,7 @@ public class PostService(HttpClient httpClient) : IPostService
             var content = await response.Content.ReadAsStringAsync();
             throw new Exception(content);
         }
-        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? new List<PostModel>();
+        return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? [];
     }
 
     public async Task<IEnumerable<TopicModel>> GetTopics()
@@ -51,7 +51,7 @@ public class PostService(HttpClient httpClient) : IPostService
             throw new Exception(content);
         }
 
-        return await response.Content.ReadFromJsonAsync<IEnumerable<TopicModel>>() ?? new List<TopicModel>();
+        return await response.Content.ReadFromJsonAsync<IEnumerable<TopicModel>>() ?? [];
     }
 
     public async Task CreatePost(CreatePostModel model)

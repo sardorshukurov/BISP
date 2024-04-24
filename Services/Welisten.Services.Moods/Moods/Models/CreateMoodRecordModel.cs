@@ -10,7 +10,7 @@ namespace Welisten.Services.Moods;
 public class CreateMoodRecordModel
 {
     public string Text { get; set; } = string.Empty;
-    public DateTime Date { get; set; } = DateTime.Now;
+    public DateTime Date { get; set; } = DateTime.UtcNow;
     public Guid MoodId { get; set; }
     public Guid EventId { get; set; }
 }
@@ -76,5 +76,13 @@ public class CreateMoodRecordModelValidator : AbstractValidator<CreateMoodRecord
     public CreateMoodRecordModelValidator(IDbContextFactory<MainDbContext> dbContextFactory)
     {
         RuleFor(mr => mr.Text).MoodRecordText();
+        RuleFor(mr => mr.Date.ToUniversalTime())
+            .Must(BeNotInFuture)
+            .WithMessage("You cannot write about the future :(");
+    }
+
+    private bool BeNotInFuture(DateTime date)
+    {
+        return date.ToUniversalTime() <= DateTime.Now.ToUniversalTime();
     }
 }

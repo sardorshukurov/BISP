@@ -1,6 +1,66 @@
-@page "/Moods"
-<h3>Moods</h3>
+@page "/moods"
+@using Welisten.Client.Pages.Moods.Services
+@using Welisten.Client.Pages.Moods.Models
+@using Welisten.Client.Pages.Moods.Components
 
+@inject IMoodService MoodService;
+@inject ISnackbar Snackbar;
+@inject IDialogService DialogService;
+
+
+<MudButton OnClick="@(() => CreateMoodRecord())" Variant="Variant.Filled" 
+           Color="Color.Success" Style="margin-bottom: 15px"><MudIcon Icon="@Icons.Material.Rounded.Add"/> Share your mood!</MudButton>
+
+
+<h3>Your mood records</h3>
+
+@foreach (var mood in _moodRecords)
+{
+    <MudCard Width="25%" Square="false" Outlined="true"
+             Style="margin: 10px 0px 10px 0px; min-width: 300px; border-radius: 1rem">
+        <MudCardContent>
+            <MudContainer Style="padding: 0; display: flex; justify-content: space-between;">
+                <MudText Typo="Typo.subtitle2">@mood.Mood.ImageLink @mood.Mood.Name – @mood.Event.Name</MudText>
+                <MudText Typo="Typo.subtitle2">@mood.Date.ToLocalTime().ToString("dd/MM/yyyy hh:mm")</MudText>
+            </MudContainer>
+            <MudContainer>
+                <MudText Typo="Typo.body2" Style="padding: 0; overflow-wrap: break-word" Align="Align.Left">@mood.Text</MudText>
+            </MudContainer>
+        </MudCardContent>
+    </MudCard>
+} 
 @code {
+    #region Properties
+
+    private IEnumerable<MoodRecordModel> _moodRecords = [];
+
+    #endregion
+
+    private async void CreateMoodRecord()
+    {
+        var parameters = new DialogParameters<_createEditMood>();
+        parameters.Add(x => x.TitleText, "Share your mood");
+        
+        var dialog = DialogService.Show<_createEditMood>("Create", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            _moodRecords = await MoodService.GetAllMoodRecords();
+            StateHasChanged();
+        }
+    }
     
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _moodRecords = await MoodService.GetAllMoodRecords();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+        }
+    }
+
 }

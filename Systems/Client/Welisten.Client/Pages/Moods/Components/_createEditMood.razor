@@ -1,0 +1,85 @@
+@using Welisten.Client.Pages.Moods.Models
+@using Welisten.Client.Pages.Moods.Services
+
+@inject IMoodService MoodService;
+@inject ISnackbar Snackbar;
+
+<MudDialog Style="width: 50%; max-width: 600px">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@TitleText</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
+            <MudTextField
+                @bind-Value="@_model.Text"
+                For="@(() => _model.Text)"
+                Label="Why you are feeling that way"
+                Variant="Variant.Outlined"
+                Margin="Margin.Dense"/>
+            <MudDatePicker @bind-Date="@_model.Date"
+                           For="@(() => _model.Date)"/>    
+            
+            <MudSelect Text="Choose Mood" T="Guid"  Variant="Variant.Outlined"
+                       Label="Mood" Placeholder="Select Mood" @bind-Value="@_model.MoodId">
+                @foreach (var mood in _moods)
+                {
+                    <MudSelectItem Value="@mood.Id">@mood</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect Text="Choose Event" T="Guid" Variant="Variant.Outlined"
+                       Label="Event" @bind-Value="@_model.EventId">
+                @foreach (var eventType in _events)
+                {
+                    <MudSelectItem Value="@eventType.Uid">@eventType</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@((() => Save()))">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Guid MoodRecordId { get; set; } = Guid.Empty;
+    [Parameter] public string TitleText { get; set; } = string.Empty;
+    private MudForm _form;
+    private CreateMoodRecordModel _model = new CreateMoodRecordModel();
+    private CreateMoodRecordModelValidator _validator = new CreateMoodRecordModelValidator();
+    private IEnumerable<EventModel> _events = [];
+    private IEnumerable<MoodModel> _moods = [];
+
+
+    private async void Save()
+    {
+        try
+        {
+            if (!_form.IsValid) return;
+            
+            if (MoodRecordId == Guid.Empty)
+            {
+                await MoodService.CreateMoodRecord(_model);
+                MudDialog.Close(DialogResult.Ok(_model));
+            }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add(e.Message, Severity.Error);
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        if (MoodRecordId != Guid.Empty)
+        {
+            MoodRecordModel model = await MoodService.GetMoodRecordById(MoodRecordId) ?? throw new Exception("Not found");
+
+            _model.Text = model.Text;
+            _model.Date = model.Date;
+            _model.EventId = model.Event.Uid;
+            _model.MoodId = model.Mood.Id;
+        }
+        _events = await MoodService.GetAllEvents();
+        _moods = await MoodService.GetAllMoods();
+    }
+}
