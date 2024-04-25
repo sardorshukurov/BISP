@@ -49,6 +49,11 @@ public static class LoggerConfiguration
         var logItemTemplate =
             "[{Timestamp:HH:mm:ss:fff} {Level:u3} ({CorrelationId})] {Message:lj}{NewLine}{Exception}";
 
+        loggerConfiguration.WriteTo.Seq(
+            "http://welisten_seq:5341/",
+            serilogLevel
+        );
+        
         // Writing to Console configuration 
         if (logSettings.WriteToConsole)
             loggerConfiguration.WriteTo.Console(

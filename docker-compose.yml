@@ -11,3 +11,7 @@ services:
       dockerfile: Systems/API/Welisten.API/Dockerfile
     depends_on:
       - welisten_postgresql
+
+  welisten_seq:
+    image: datalust/seq:latest
+    container_name: welisten_seq
