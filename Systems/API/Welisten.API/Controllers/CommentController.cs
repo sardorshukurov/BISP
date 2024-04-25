@@ -32,45 +32,61 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateCommentModel request)
     {
-        if (!await _userService.Exists(User))
-            return Unauthorized();
-
-        if (_userService.IsExpired(User))
-            return Unauthorized();
-
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+        try
         {
-            var result = await _commentService.Create(request, userId);
-            return Ok(result);
-        }
+            if (!await _userService.Exists(User))
+                return Unauthorized();
 
-        return Unauthorized();
+            if (_userService.IsExpired(User))
+                return Unauthorized();
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            {
+                var result = await _commentService.Create(request, userId);
+                return Ok(result);
+            }
+
+            return Unauthorized();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
+        }
     }
 
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
-            try
-            {
-                await _commentService.Delete(id, userId);
-                return Ok();
-            }
-            catch (InvalidOperationException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (AuthenticationException)
-            {
-                return Unauthorized();
-            }
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+                try
+                {
+                    await _commentService.Delete(id, userId);
+                    return Ok();
+                }
+                catch (InvalidOperationException e)
+                {
+                    return NotFound(e.Message);
+                }
+                catch (AuthenticationException)
+                {
+                    return Unauthorized();
+                }
 
-        return Unauthorized();
+            return Unauthorized();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
+        }
     }
 
     [AllowAnonymous]
@@ -84,14 +100,13 @@ public class CommentController : ControllerBase
         }
         catch (InvalidOperationException e)
         {
-            _logger.Warning(e, "Post not found with ID: {Id}", id);
-            return NotFound(e.Message);
+            _logger.Warning(e.Message);
+            return NotFound();
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Error occurred while fetching comments for post with ID: {Id}", id);
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                "An unexpected error occurred. Please try again later.");
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
         }
     }
 
@@ -105,14 +120,13 @@ public class CommentController : ControllerBase
         }
         catch (InvalidOperationException e)
         {
-            _logger.Warning(e, "Comment not found with ID: {id}", id);
-            return NotFound(e.Message);
+            _logger.Warning(e.Message);
+            return NotFound();
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Error occurred while fetching comment with ID: {Id}", id);
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                "An unexpected error occurred. Please try again later.");
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
         }
     }
 
@@ -127,9 +141,8 @@ public class CommentController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Error occurred while updating comment with ID: {Id}", id);
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                "An unexpected error occurred. Please try again later.");
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
         }
     }
     
@@ -137,22 +150,24 @@ public class CommentController : ControllerBase
     [HttpGet("byUser")]
     public async Task<IActionResult> GetByUser()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
-            try
-            {
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
                 return Ok(await _commentService.GetCommentsByUser(userId));
-            }
-            catch (AuthenticationException)
-            {
-                return Unauthorized();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-
-        return Unauthorized();
+            
+            return Unauthorized();
+        }
+        catch (AuthenticationException e)
+        {
+            _logger.Error(e.Message);
+            return Unauthorized(e.Message);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
+        }
     }
 }

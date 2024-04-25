@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Welisten.Common.Exceptions;
 using Welisten.Common.Responses;
+using Welisten.Services.Logger.Logger;
 using Welisten.Services.UserAccounts;
 
 namespace Welisten.API.Controllers;
@@ -15,11 +16,11 @@ namespace Welisten.API.Controllers;
 [Route("v{version:apiVersion}/[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly ILogger<AccountController> _logger;
+    private readonly IAppLogger _logger;
     private readonly IMapper _mapper;
     private readonly IUserAccountService _userAccountService;
 
-    public AccountController(IMapper mapper, ILogger<AccountController> logger, IUserAccountService userAccountService)
+    public AccountController(IMapper mapper, IAppLogger logger, IUserAccountService userAccountService)
     {
         _mapper = mapper;
         _logger = logger;
@@ -37,11 +38,13 @@ public class AccountController : ControllerBase
         }
         catch (ProcessException e)
         {
+            _logger.Error(e.Message);
             return BadRequest(e.Message);
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
         }
     }
 
@@ -59,11 +62,13 @@ public class AccountController : ControllerBase
         }
         catch (ProcessException e)
         {
+            _logger.Error(e.Message);
             return BadRequest(e.Message);
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
         }
     }
 
@@ -91,7 +96,8 @@ public class AccountController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
         }
     }
 }

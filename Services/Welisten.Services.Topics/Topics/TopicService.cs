@@ -11,14 +11,11 @@ public class TopicService : ITopicService
 {
     private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
 
-    private readonly IAppLogger _logger;
     private readonly IMapper _mapper;
     public TopicService(IDbContextFactory<MainDbContext> dbContextFactory,
-            IAppLogger logger,
             IMapper mapper)
     {
         _dbContextFactory = dbContextFactory;
-        _logger = logger;
         _mapper = mapper;
     }
     public async Task<IEnumerable<TopicModel>> GetAll()
@@ -35,50 +32,29 @@ public class TopicService : ITopicService
 
     public async Task<TopicModel> Create(string typeName)
     {
-        try
-        {
-            await using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var topic = _mapper.Map<Topic>(new TopicModel { Id = Guid.NewGuid(), Type = typeName });
+        var topic = _mapper.Map<Topic>(new TopicModel { Id = Guid.NewGuid(), Type = typeName });
 
-            await context.Topics.AddAsync(topic);
-            await context.SaveChangesAsync();
-            
-            return _mapper.Map<TopicModel>(topic);
-        }
-        catch (Exception e)
-        {
-            _logger.Error(e.Message);
-            throw;
-        }
+        await context.Topics.AddAsync(topic);
+        await context.SaveChangesAsync();
+        
+        return _mapper.Map<TopicModel>(topic);
     }
 
     public async Task Update(Guid id, string typeName)
     {
-        try
-        {
-            await using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var topic = await context.Topics.FirstOrDefaultAsync(t => t.Uid == id);
+        var topic = await context.Topics.FirstOrDefaultAsync(t => t.Uid == id);
 
-            if (topic == null)
-                throw new ProcessException($"Topic with ID: {id} not found");
+        if (topic == null)
+            throw new ProcessException($"Topic with ID: {id} not found");
 
-            context.Entry(topic).State = EntityState.Modified;
+        context.Entry(topic).State = EntityState.Modified;
 
-            topic.Type = typeName;
+        topic.Type = typeName;
 
-            await context.SaveChangesAsync();
-        }
-        catch (ProcessException)
-        {
-            _logger.Error($"Error updating topic with ID {id}. Topic with this ID not found");
-            throw;
-        }
-        catch (Exception e)
-        {
-            _logger.Error($"Error updating topic with ID {id}. Error message: {e.Message}");
-            throw;
-        }
+        await context.SaveChangesAsync();
     }
 }

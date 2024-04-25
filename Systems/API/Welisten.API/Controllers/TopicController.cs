@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Welisten.Services.Logger.Logger;
 using Welisten.Services.Topics;
 using Welisten.Services.UserAccounts;
 
@@ -14,19 +15,28 @@ namespace Welisten.API.Controllers;
 public class TopicController : ControllerBase
 {
     private readonly ITopicService _topicService;
-    private readonly IUserAccountService _userService;
+    private readonly IAppLogger _logger;
 
-    public TopicController(ITopicService topicService, IUserAccountService userService)
+    public TopicController(ITopicService topicService, IAppLogger logger)
     {
         _topicService = topicService;
-        _userService = userService;
+        _logger = logger;
     }
 
     [AllowAnonymous]
     [HttpGet("")]
-    public async Task<IEnumerable<TopicModel>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return await _topicService.GetAll();
+        try
+        {
+            return Ok(await _topicService.GetAll());
+
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500);
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -40,7 +50,8 @@ public class TopicController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            _logger.Error(e.Message);
+            return StatusCode(500);
         }
     }
 
@@ -55,7 +66,8 @@ public class TopicController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            _logger.Error(e.Message);
+            return StatusCode(500);
         }
     }
 }

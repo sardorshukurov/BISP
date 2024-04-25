@@ -9,13 +9,10 @@ namespace Welisten.Services.Likes;
 public class LikeService : ILikeService
 {
     private readonly IDbContextFactory<MainDbContext> _dbContextFactory;
-    private readonly IAppLogger _logger;
 
-    public LikeService(IDbContextFactory<MainDbContext> dbContextFactory,
-        IAppLogger logger)
+    public LikeService(IDbContextFactory<MainDbContext> dbContextFactory)
     {
         _dbContextFactory = dbContextFactory;
-        _logger = logger;
     }
     
     public async Task LikeUnlike(Guid userId, Guid postId)
@@ -29,7 +26,6 @@ public class LikeService : ILikeService
         
         if (post == null)
         {
-            _logger.Error($"Error liking/unliking post with Id: {postId}. Post not found");
             throw new ProcessException($"Post with ID: {postId}. Not found");
         }
         
@@ -51,14 +47,6 @@ public class LikeService : ILikeService
             post.PostCount.LikeCount++;
         }
         
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            _logger.Error($"Error saving changes - like/unlike: {e.Message}");
-            throw;
-        }
+        await context.SaveChangesAsync();
     }
 }

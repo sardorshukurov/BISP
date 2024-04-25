@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Welisten.Common.Exceptions;
 using Welisten.Services.Likes;
+using Welisten.Services.Logger.Logger;
 using Welisten.Services.UserAccounts;
 
 namespace Welisten.API.Controllers;
@@ -16,34 +17,37 @@ namespace Welisten.API.Controllers;
 public class LikeController : ControllerBase
 {
     private readonly ILikeService _likeService;
-    private readonly IUserAccountService _userService;
-
-    public LikeController(ILikeService likeService, IUserAccountService userService)
+    private readonly IAppLogger _logger;
+    
+    public LikeController(ILikeService likeService, IAppLogger logger)
     {
         _likeService = likeService;
-        _userService = userService;
+        _logger = logger;
     }
 
     [HttpPost("{postId:guid}")]
     public async Task<IActionResult> LikeUnlike([FromRoute] Guid postId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
-            try
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
             {
                 await _likeService.LikeUnlike(userId, postId);
                 return Ok();
             }
-            catch (ProcessException)
-            {
-                return NotFound("Post not found");
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
 
-        return Unauthorized();
+            return Unauthorized();
+        }
+        catch (ProcessException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return BadRequest(StatusCode(500));
+        }
     }
 }

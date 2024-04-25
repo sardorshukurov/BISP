@@ -38,7 +38,7 @@ public class MoodController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, $"An error occurred while retrieving moods.");
+            return StatusCode(500);
         }
     }
 
@@ -62,7 +62,7 @@ public class MoodController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, "An error occurred while retrieving mood records.");
+            return StatusCode(500);
         }
     }
 
@@ -77,7 +77,7 @@ public class MoodController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, "An error occurred while retrieving events.");
+            return StatusCode(500);
         }
     }
     
@@ -104,7 +104,7 @@ public class MoodController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, $"An error occurred while getting mood record id with {id}.");
+            return StatusCode(500);
         }
     }
 
@@ -128,7 +128,7 @@ public class MoodController : ControllerBase
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, $"An error occurred while creating mood record.");
+            return StatusCode(500);
         }
     }
 
@@ -148,14 +148,14 @@ public class MoodController : ControllerBase
 
             return Unauthorized();
         }
-        catch (AuthenticationException)
+        catch (AuthenticationException e)
         {
-            return Unauthorized();
+            return Unauthorized(e.Message);
         }
         catch (Exception e)
         {
             _logger.Error(e.Message);
-            return StatusCode(500, $"An error occurred while updating mood record.");
+            return StatusCode(500);
         }
     }
     
