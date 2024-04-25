@@ -1,0 +1,165 @@
+@page "/chat"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable;
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Chat</h3>
+
+        @if (!IsConnected && !_isWaiting)
+        {
+            <MudContainer Class="input-group">
+                <MudCheckBox @bind-Value="_anonymous">Connect anonymously?</MudCheckBox>
+                <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Connect">Connect</MudButton>
+            </MudContainer>
+        }
+        else if (_isWaiting)
+        {
+            <p>Waiting for other user to connect...</p>
+        }
+        else
+        {
+            <MudContainer>
+                    <textarea style="width: 100%; height: 500px;" @ref="TextAreaRef">
+                        @_messages
+                    </textarea>
+                <MudContainer Class="input-group" Style="margin-top: 10px;">
+                    <MudTextField @bind-Value="_message" @onkeyup="HandleInput" Class="form-control" />
+                    <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Send" Disabled="@(!IsConnected)">Send</MudButton>
+                    <MudButton Class="btn btn-secondary" Variant="Variant.Filled" @onclick="SwitchToAnotherSession" Disabled="@(!IsConnected)">Switch to Another Session</MudButton>
+                </MudContainer>
+            </MudContainer>
+        }
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavManager.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private HubConnection? _hubConnection;
+    private string _messages = string.Empty;
+    private string _username = string.Empty;
+    private string _message = string.Empty;
+    private bool _anonymous = false;
+    
+    ElementReference TextAreaRef;
+    private bool _isWaiting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var identity = user.Identity as ClaimsIdentity;
+            var claims = identity!.Claims.ToList();
+
+            var type = claims[2].Type;
+            _username = claims.Find(c => c.Type.ToString() == "name")!.Value;
+        }
+    }
+
+    private async Task Connect()
+    {
+        _isWaiting = true;
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Settings.ApiRoot + "/chathub")
+            .Build();
+
+        _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            var msg = $"{(string.IsNullOrEmpty(user) ? "" : user + ": ")} {message}";
+            _messages += msg + "\n";
+            JSRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
+            StateHasChanged();
+            // If the received message indicates that another user has connected, set _isWaiting to false
+            if (message == "You are now connected! Start chatting.")
+            {
+                _isWaiting = false;
+                StateHasChanged(); // Update the UI
+            }
+        });
+
+        await _hubConnection.StartAsync();
+        await _hubConnection.SendAsync("Connect", _username);
+    }
+    
+    private async Task SwitchToAnotherSession()
+    {
+        // Disconnect the current user from the current session
+        await Disconnect();
+        _messages = string.Empty;
+        // Reconnect the user to find another session
+        _isWaiting = true;
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Settings.ApiRoot + "/chathub")
+            .Build();
+
+        _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            var msg = $"{(string.IsNullOrEmpty(user) ? "" : user + ": ")} {message}";
+            _messages += msg + "\n";
+            JSRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
+            StateHasChanged();
+            // If the received message indicates that another user has connected, set _isWaiting to false
+            if (message == "You are now connected! Start chatting.")
+            {
+                _isWaiting = false;
+                StateHasChanged(); // Update the UI
+            }
+        });
+
+        await _hubConnection.StartAsync();
+        await _hubConnection.SendAsync("SwitchToAnotherSession", _username);
+    }
+    
+    private async Task Disconnect()
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.StopAsync();
+            await DisposeAsync();
+            _hubConnection = null;
+        }
+    }
+
+    private async Task Send()
+    {
+        if (_hubConnection is not null)
+        {
+            var username = _anonymous ? "Anonymous" : _username;
+            await _hubConnection.SendAsync("SendMessage", $"{username}: {_message}");
+            _message = string.Empty;
+        }
+    }
+
+    private async Task HandleInput(KeyboardEventArgs args)
+    {
+        if (args.Key is null || args.Key.Equals("Enter"))
+        {
+            await Send();
+        }
+    }
+
+    public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+}

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Welisten.API.Hubs;
 using Welisten.Common.Extensions;
 
 namespace Welisten.API.Configuration;
@@ -28,7 +29,7 @@ public static class ControllerAndViewsConfiguration
     {
         app.MapRazorPages();
         app.MapControllers();
-
+        
         return app;
     }
 }

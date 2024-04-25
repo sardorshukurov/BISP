@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.ResponseCompression;
 using Welisten.API;
 using Welisten.API.Configuration;
+using Welisten.API.Hubs;
 using Welisten.Common.Security;
 using Welisten.Common.Settings;
 using Welisten.Context;
@@ -40,11 +42,21 @@ services.AddAppValidator();
 
 services.AddAppControllerAndViews();
 
+services.AddSignalR();
+services.AddResponseCompression(options => 
+    options.MimeTypes = 
+        ResponseCompressionDefaults
+            .MimeTypes
+            .Concat(new [] {"application/octet-stream"})
+);
+
 services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<IAppLogger>();
+
+app.UseResponseCompression();
 
 app.UseAppCors();
 
@@ -55,6 +67,8 @@ app.UseAppSwagger();
 app.UseAppAuth();
 
 app.UseAppControllerAndViews();
+    
+app.MapHub<ChatHub>("/chathub");
 
 DbInitializer.Execute(app.Services);
 
