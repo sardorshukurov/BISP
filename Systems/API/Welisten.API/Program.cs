@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.ResponseCompression;
+using Serilog;
 using Welisten.API;
 using Welisten.API.Configuration;
 using Welisten.API.Hubs;
@@ -15,6 +16,9 @@ var logSettings = CommonSettings.Load<LogSettings>("Log");
 var swaggerSettings = CommonSettings.Load<SwaggerSettings>("Swagger");
 
 var builder = WebApplication.CreateBuilder(args);
+
+// builder.Host.UseSerilog((context, loggerConfig) =>
+//     loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 var services = builder.Services;
 
