@@ -1,36 +1,48 @@
 @page "/chat"
+@using System.Security.Claims
 @using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components.Authorization
 
-@inject NavigationManager NavManager;
 @inject IJSRuntime JSRuntime;
+@inject NavigationManager NavManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IAsyncDisposable;
 
-<h3>Chat</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3>Chat</h3>
 
-@if (!IsConnected && !_isWaiting)
-{
-<MudContainer Class="input-group">
-    <MudTextField @bind-Value="_username" Placeholder="What's your name?" Class="form-control" />
-    <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Connect">Connect</MudButton>
-</MudContainer>
-}
-else if (_isWaiting)
-{
-<p>Waiting for other user to connect...</p>
-}
-else
-{
-<MudContainer>
-    <textarea style="width: 100%; height: 500px;" @ref="TextAreaRef">
-        @_messages
-    </textarea>
-    <MudContainer Class="input-group" Style="margin-top: 10px;">
-        <MudTextField @bind-Value="_message" @onkeyup="HandleInput" Class="form-control" />
-        <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Send" Disabled="@(!IsConnected)">Send</MudButton>
-        <MudButton Class="btn btn-secondary" Variant="Variant.Filled" @onclick="SwitchToAnotherSession" Disabled="@(!IsConnected)">Switch to Another Session</MudButton>
-    </MudContainer>
-</MudContainer>
-}
+        @if (!IsConnected && !_isWaiting)
+        {
+            <MudContainer Class="input-group">
+                <MudCheckBox @bind-Value="_anonymous">Connect anonymously?</MudCheckBox>
+                <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Connect">Connect</MudButton>
+            </MudContainer>
+        }
+        else if (_isWaiting)
+        {
+            <p>Waiting for other user to connect...</p>
+        }
+        else
+        {
+            <MudContainer>
+                    <textarea style="width: 100%; height: 500px;" @ref="TextAreaRef">
+                        @_messages
+                    </textarea>
+                <MudContainer Class="input-group" Style="margin-top: 10px;">
+                    <MudTextField @bind-Value="_message" @onkeyup="HandleInput" Class="form-control" />
+                    <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Send" Disabled="@(!IsConnected)">Send</MudButton>
+                    <MudButton Class="btn btn-secondary" Variant="Variant.Filled" @onclick="SwitchToAnotherSession" Disabled="@(!IsConnected)">Switch to Another Session</MudButton>
+                </MudContainer>
+            </MudContainer>
+        }
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavManager.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {
@@ -38,8 +50,26 @@ else
     private string _messages = string.Empty;
     private string _username = string.Empty;
     private string _message = string.Empty;
+    private bool _anonymous = false;
+    
     ElementReference TextAreaRef;
     private bool _isWaiting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var identity = user.Identity as ClaimsIdentity;
+            var claims = identity!.Claims.ToList();
+
+            var type = claims[2].Type;
+            _username = claims.Find(c => c.Type.ToString() == "name")!.Value;
+        }
+    }
 
     private async Task Connect()
     {
@@ -109,7 +139,8 @@ else
     {
         if (_hubConnection is not null)
         {
-            await _hubConnection.SendAsync("SendMessage", $"{_username}: {_message}");
+            var username = _anonymous ? "Anonymous" : _username;
+            await _hubConnection.SendAsync("SendMessage", $"{username}: {_message}");
             _message = string.Empty;
         }
     }
