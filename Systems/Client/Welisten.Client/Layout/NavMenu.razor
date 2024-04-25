@@ -16,6 +16,7 @@
     <MudButtonGroup OverrideStyles="false">
         <AuthorizeView>
             <Authorized>
+                <MudButton Href="/chat" Variant="Variant.Filled" Color="Color.Warning"><MudIcon Icon="@Icons.Material.Rounded.Chat"/></MudButton>
                 <MudButton Href="/moods" Variant="Variant.Filled" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Rounded.Face"/></MudButton>
                 <MudButton Href="/createPost" Variant="Variant.Filled" Color="Color.Success"><MudIcon Icon="@Icons.Material.Rounded.Add"/></MudButton>
                 <MudButton @onclick="@(() => NavManager.NavigateTo("/profile"))" Color="Color.Secondary" Variant="Variant.Filled">@name</MudButton>

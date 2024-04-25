@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Welisten.API.Hubs;
 
-[Authorize]
 public class ChatHub : Hub
 {
     private static List<ChatSession> ActiveSessions = new List<ChatSession>();

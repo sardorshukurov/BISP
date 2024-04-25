@@ -10,22 +10,19 @@
     </TitleContent>
     <DialogContent>
         <MudForm Model="@_model" @ref="@_form" Validation="@(_validator.ValidateValue)" ValidationDelay="0">
+            <MudSelect Text="Choose Mood" T="Guid"  Variant="Variant.Outlined"
+                       Label="Mood" Placeholder="Select Mood" @bind-Value="@_model.MoodId">
+                @foreach (var mood in _moods)
+                {
+                <MudSelectItem Value="@mood.Id">@mood</MudSelectItem>
+                }
+            </MudSelect>
             <MudTextField
                 @bind-Value="@_model.Text"
                 For="@(() => _model.Text)"
                 Label="Why you are feeling that way"
                 Variant="Variant.Outlined"
                 Margin="Margin.Dense"/>
-            <MudDatePicker @bind-Date="@_model.Date"
-                           For="@(() => _model.Date)"/>    
-            
-            <MudSelect Text="Choose Mood" T="Guid"  Variant="Variant.Outlined"
-                       Label="Mood" Placeholder="Select Mood" @bind-Value="@_model.MoodId">
-                @foreach (var mood in _moods)
-                {
-                    <MudSelectItem Value="@mood.Id">@mood</MudSelectItem>
-                }
-            </MudSelect>
             <MudSelect Text="Choose Event" T="Guid" Variant="Variant.Outlined"
                        Label="Event" @bind-Value="@_model.EventId">
                 @foreach (var eventType in _events)
@@ -33,6 +30,8 @@
                     <MudSelectItem Value="@eventType.Uid">@eventType</MudSelectItem>
                 }
             </MudSelect>
+            <MudDatePicker @bind-Date="@_model.Date"
+                           For="@(() => _model.Date)"/>
         </MudForm>
     </DialogContent>
     <DialogActions>

@@ -123,10 +123,17 @@ public class PostService : IPostService
             post.UserId = userId;
 
             // Fetch existing topics by Uid
-            post.Topics = await context.Topics
-                .Where(t => model.Topics.Contains(t.Uid))
-                .ToListAsync();
-        
+            if (model.Topics.Count < 1)
+            {
+                post.Topics = await context.Topics.Where(t => t.Type == "Other").ToListAsync();
+            }
+            else
+            {
+                post.Topics = await context.Topics
+                    .Where(t => model.Topics.Contains(t.Uid))
+                    .ToListAsync();
+            }
+            
             context.AttachRange(post.Topics);
         
             // Add the entities to the context

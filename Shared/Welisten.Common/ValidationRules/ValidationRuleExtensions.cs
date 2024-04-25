@@ -16,7 +16,7 @@ public static class ValidationRuleExtensions
     {
         return ruleBuilder
             .NotEmpty().WithMessage("Text of the post is required")
-            .MinimumLength(50).WithMessage("Minimum length of text is 50")
+            .MinimumLength(15).WithMessage("Minimum length of text is 15")
             .MaximumLength(3000).WithMessage("Maximum length is 3000");
     }
     

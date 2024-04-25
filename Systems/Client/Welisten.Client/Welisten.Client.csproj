@@ -20,6 +20,8 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+      <_ContentIncludedByDefault Remove="Welisten.ClientPwa\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="Welisten.ClientPwa\obj\Welisten.ClientPwa.csproj.nuget.dgspec.json" />
     </ItemGroup>
     
     <ItemGroup>
