@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Welisten.Context.Context.Configuration;
 using Welisten.Context.Entities;
+using Welisten.Context.Entities.Articles;
 
 namespace Welisten.Context.Context;
 
@@ -18,7 +19,8 @@ public class MainDbContext
     public DbSet<MoodRecord> MoodRecords { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Like> Likes { get; set; }
-    
+    public DbSet<Article> Articles { get; set; }
+    public DbSet<ArticleCategory> ArticleCategories { get; set; }
     public MainDbContext(DbContextOptions<MainDbContext> options) : base(options) { }
     protected override void OnModelCreating(ModelBuilder builder)
     {

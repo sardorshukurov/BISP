@@ -50,4 +50,9 @@
         <ProjectReference Include="..\..\..\Services\Welisten.Services.UserAccounts\Welisten.Services.UserAccounts.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="JsonFiles\articles.json" />
+      <None Include="JsonFiles\categories.json" />
+    </ItemGroup>
+
 </Project>

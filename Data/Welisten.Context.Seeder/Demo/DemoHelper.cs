@@ -1,4 +1,6 @@
+using Newtonsoft.Json;
 using Welisten.Context.Entities;
+using Welisten.Context.Entities.Articles;
 
 namespace Welisten.Context.Seeder.Demo;
 
