@@ -55,11 +55,12 @@
     private Guid _selectedTopicId = Guid.Empty;
     private int _currentPage = 1;
     private int _totalPages = 1;
+    private int _pageSize = 5;
     
     private async Task ReloadData()
     {
         _selectedTopicId = Guid.Empty;
-        var result = await PostService.GetPostsWithPages(_currentPage, 5);
+        var result = await PostService.GetPostsWithPages(_currentPage, _pageSize);
         _posts = result.Item1;
         _totalPages = result.Item2;
     }
@@ -95,29 +96,13 @@
         try
         {
             _selectedTopicId = topicId;
-            var result = await PostService.GetPostsByTopicsWithPages(new Guid[]{_selectedTopicId}, _currentPage, 5);
+            var result = await PostService.GetPostsByTopicsWithPages(new Guid[]{_selectedTopicId}, _currentPage, _pageSize);
             _posts = result.Item1;
             _totalPages = result.Item2;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Snackbar.Add("Something went wrong", Severity.Error);
-        }
-    }
-    
-    private async Task LoadNextPage()
-    {
-        if (_currentPage < _totalPages)
-        {
-            _currentPage++;
-            if (_selectedTopicId != Guid.Empty)
-            {
-                await GetPostsByTopic(_selectedTopicId);
-            }
-            else
-            {
-                await ReloadData();
-            }
         }
     }
 
@@ -136,22 +121,6 @@
             }
         }
     }
-    private async Task LoadPreviousPage()
-    {
-        if (_currentPage > 1)
-        {
-            _currentPage--;
-            if (_selectedTopicId != Guid.Empty)
-            {
-                await GetPostsByTopic(_selectedTopicId);
-            }
-            else
-            {
-                await ReloadData();
-            }
-        }
-    }
-
     
     protected override async Task OnInitializedAsync()
     {
@@ -160,9 +129,9 @@
             await ReloadData();
             _topics = await PostService.GetTopics();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Snackbar.Add(e.Message+"Something went wrong", Severity.Error);
+            Snackbar.Add("Something went wrong", Severity.Error);
         }
     }
 }

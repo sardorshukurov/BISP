@@ -7,7 +7,7 @@ public class ArticleService(HttpClient httpClient) : IArticleService
 {
     public async Task<IEnumerable<ArticleCategory>> GetCategories()
     {
-        var response = await httpClient.GetAsync("v1/v1.0/Article/categories");
+        var response = await httpClient.GetAsync("v1/Article/categories");
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -19,7 +19,7 @@ public class ArticleService(HttpClient httpClient) : IArticleService
 
     public async Task<ArticlePageResponse> GetArticles(int pageNumber, int pageSize = 30)
     {
-        var response = await httpClient.GetAsync($"v1/v1.0/Article/articles?pageNumber={pageNumber}&pageSize={pageSize}");
+        var response = await httpClient.GetAsync($"v1/Article/articles?pageNumber={pageNumber}&pageSize={pageSize}");
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -31,7 +31,7 @@ public class ArticleService(HttpClient httpClient) : IArticleService
 
     public async Task<ArticlePageResponse> GetArticles(int categoryId, int pageNumber, int pageSize)
     {
-        var response = await httpClient.GetAsync($"v1/v1.0/Article/articles/byCategory?categoryId={categoryId}&pageNumber={pageNumber}&pageSize={pageSize}");
+        var response = await httpClient.GetAsync($"v1/Article/articles/byCategory?categoryId={categoryId}&pageNumber={pageNumber}&pageSize={pageSize}");
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();

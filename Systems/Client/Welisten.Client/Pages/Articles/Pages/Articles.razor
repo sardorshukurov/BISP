@@ -1,0 +1,109 @@
+@page "/articles"
+@using Welisten.Client.Pages.Articles.Models
+@using Welisten.Client.Pages.Articles.Services
+
+@inject IArticleService ArticleService;
+@inject ISnackbar Snackbar;
+@inject NavigationManager NavManager;
+
+<h1>Mental Health</h1>
+<h2>How can we help you?</h2>
+
+<MudGrid Spacing="1" Justify="Justify.Center" Style="width: 50%; padding: 50px 0 50px 0">
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Dark" OnClick="@(() => ReloadData())">All</MudButton>
+    </MudItem>
+    @foreach (var category in _categories)
+    {
+        <MudItem>
+            <MudButton Variant="Variant.Filled" Color="Color.Dark" OnClick="@(() => GetArticlesByCategory(category.Id))">
+                 @category.Name
+            </MudButton>
+        </MudItem>
+    }
+</MudGrid>
+
+<MudGrid Spacing=@_spacing Justify="Justify.Center" Style="width: 85%">
+    @foreach (var article in _articles)
+    {
+        <MudItem>
+            <MudCard Style="margin-bottom:50px; max-width: 300px; min-width: 100px; border-radius: 1rem;">
+                <MudCardContent>
+                    <MudText Color="Color.Secondary" Typo="Typo.subtitle1">@article.Category.Name</MudText>
+                    <MudText Typo="Typo.h6">@article.Title</MudText>
+                    <MudText Typo="Typo.body1">@article.Subtitle</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Href="@article.Link" Target="_blank" Variant="Variant.Text" Color="Color.Dark">Read</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+<MudPagination SelectedChanged="LoadPage" Rectangular="true" Variant="Variant.Filled" Count="@_totalPages" Class="my-4" />
+
+@code {
+    private IEnumerable<ArticleCategory> _categories = [];
+    private IEnumerable<Article> _articles = [];
+
+    private int _selectedCategoryId = 0;
+    private int _currentPage = 1;
+    private int _totalPages = 1;
+
+    private int _spacing = 4;
+    private int _pageSize = 15;
+    
+    private async Task ReloadData()
+    {
+        _selectedCategoryId = 0;
+        var result = await ArticleService.GetArticles(_currentPage, _pageSize);
+        _articles = result.Item1;
+        _totalPages = result.Item2;
+    }
+
+    private async Task GetArticlesByCategory(int categoryId)
+    {
+        try
+        {
+            _selectedCategoryId = categoryId;
+            var result = await ArticleService.GetArticles(categoryId, _currentPage, _pageSize);
+            _articles = result.Item1;
+            _totalPages = result.Item2;
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+        }
+    }
+
+    private async Task LoadPage(int page)
+    {
+        if (_currentPage <= _totalPages)
+        {
+            _currentPage = page;
+            if (_selectedCategoryId != 0)
+            {
+                await GetArticlesByCategory(_selectedCategoryId);
+            }
+            else
+            {
+                await ReloadData();
+            }
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await ReloadData();
+            _categories = await ArticleService.GetCategories();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+        }
+    }
+
+}
