@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Welisten.Client;
 using MudBlazor.Services;
+using Welisten.Client.Pages.Articles.Services;
 using Welisten.Client.Pages.Authorization.Services;
 using Welisten.Client.Pages.Comments.Services;
 using Welisten.Client.Pages.Moods.Services;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMoodService, MoodService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
 
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();

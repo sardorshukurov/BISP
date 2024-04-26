@@ -29,12 +29,6 @@ public class PostService(HttpClient httpClient) : IPostService
             throw new Exception(content);
         }
         return await response.Content.ReadFromJsonAsync<PostPageResponse>();
-
-        /*// Extract the data from the dynamic object
-        var posts = responseContent.item1;
-        var totalPages = responseContent.item2;
-
-        return (posts, totalPages);*/
     }
 
     public async Task<IEnumerable<PostModel>> GetPostsByUser()
