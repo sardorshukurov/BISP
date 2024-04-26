@@ -5,7 +5,6 @@ using Welisten.Common.Exceptions;
 using Welisten.Common.Validator;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
-using Welisten.Services.Logger.Logger;
 
 namespace Welisten.Services.Posts;
 
@@ -43,6 +42,28 @@ public class PostService : IPostService
         
         return result;
     }
+    
+    public async Task<(IEnumerable<PostModel>, int)> GetAllWithPages(int pageNumber, int pageSize)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        
+        var totalPostsCount = await context.Posts.CountAsync();
+        
+        var posts = await context.Posts
+            .Include(x => x.User)
+            .Include(x => x.PostCount)
+            .Include(x => x.Topics)
+            .OrderByDescending(x => x.Date)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    
+        var result = _mapper.Map<IEnumerable<Post>, IEnumerable<PostModel>>(posts);
+
+        var totalPages = (int)Math.Ceiling((double)totalPostsCount / pageSize);
+        
+        return (result, totalPages);
+    }
 
     public async Task<IEnumerable<PostModel>> GetByUser(Guid userId)
     {
@@ -77,6 +98,32 @@ public class PostService : IPostService
         var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
         
         return result;
+    }
+
+    public async Task<(IEnumerable<PostModel>, int)> GetByTopicsWithPages(IEnumerable<Guid> topicIds, int pageNumber, int pageSize)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        
+        var totalPostsCount = await context.Posts
+            .Where(x => x.Topics.Any(t => topicIds.Contains(t.Uid)))
+            .CountAsync();
+        
+        var posts = await context.Posts
+            .Include(x => x.User)
+            .Include(x => x.PostCount)
+            .Include(x => x.Topics)
+            .OrderByDescending(x => x.Date)
+            .Where(x => 
+                x.Topics.Any(t => topicIds.Contains(t.Uid)))
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        
+        var result = _mapper.Map<IEnumerable<Post>,IEnumerable<PostModel>>(posts);
+        
+        var totalPages = (int)Math.Ceiling((double)totalPostsCount / pageSize);
+        
+        return (result, totalPages);
     }
 
     public async Task<PostModel?> GetById(Guid id)

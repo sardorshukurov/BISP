@@ -10,11 +10,11 @@
 @layout MainLayout
 
 
-<MudButtonGroup Variant="Variant.Filled" Color="Color.Dark" Style="margin-bottom: 20px">
+<MudButtonGroup Variant="Variant.Filled" Color="Color.Dark" Style="margin-bottom: 20px;">
     <MudButton OnClick="@(() => ReloadData())">All</MudButton>
     @foreach (var topic in _topics)
     {
-        <MudButton T="bool" OnClick="@(() => GetPostsByTopic(topic.Id))"
+        <MudButton OnClick="@(() => GetPostsByTopic(topic.Id))"
                      Style="padding-right: 20px"> @topic.Type </MudButton>
     }
 </MudButtonGroup>
@@ -45,15 +45,23 @@
     </MudCard>
 }
 
+<MudPagination SelectedChanged="LoadPage" Rectangular="true" Variant="Variant.Filled" Count="@_totalPages" Class="my-4" />
 
 @code{
 
     private IEnumerable<PostModel> _posts = [];
     private IEnumerable<TopicModel> _topics = [];
 
+    private Guid _selectedTopicId = Guid.Empty;
+    private int _currentPage = 1;
+    private int _totalPages = 1;
+    
     private async Task ReloadData()
     {
-        _posts = await PostService.GetPosts();
+        _selectedTopicId = Guid.Empty;
+        var result = await PostService.GetPostsWithPages(_currentPage, 5);
+        _posts = result.Item1;
+        _totalPages = result.Item2;
     }
 
     private async Task LikeOrDisLike(Guid id)
@@ -86,13 +94,64 @@
     {
         try
         {
-            _posts = await PostService.GetPostsByTopics(new Guid[]{topicId});
+            _selectedTopicId = topicId;
+            var result = await PostService.GetPostsByTopicsWithPages(new Guid[]{_selectedTopicId}, _currentPage, 5);
+            _posts = result.Item1;
+            _totalPages = result.Item2;
         }
         catch (Exception e)
         {
             Snackbar.Add("Something went wrong", Severity.Error);
         }
     }
+    
+    private async Task LoadNextPage()
+    {
+        if (_currentPage < _totalPages)
+        {
+            _currentPage++;
+            if (_selectedTopicId != Guid.Empty)
+            {
+                await GetPostsByTopic(_selectedTopicId);
+            }
+            else
+            {
+                await ReloadData();
+            }
+        }
+    }
+
+    private async Task LoadPage(int page)
+    {
+        if (_currentPage <= _totalPages)
+        {
+            _currentPage = page;
+            if (_selectedTopicId != Guid.Empty)
+            {
+                await GetPostsByTopic(_selectedTopicId);
+            }
+            else
+            {
+                await ReloadData();
+            }
+        }
+    }
+    private async Task LoadPreviousPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            if (_selectedTopicId != Guid.Empty)
+            {
+                await GetPostsByTopic(_selectedTopicId);
+            }
+            else
+            {
+                await ReloadData();
+            }
+        }
+    }
+
     
     protected override async Task OnInitializedAsync()
     {
@@ -101,9 +160,9 @@
             await ReloadData();
             _topics = await PostService.GetTopics();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            Snackbar.Add("Something went wrong", Severity.Error);
+            Snackbar.Add(e.Message+"Something went wrong", Severity.Error);
         }
     }
 }

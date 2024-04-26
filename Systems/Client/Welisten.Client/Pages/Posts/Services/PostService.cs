@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -17,6 +18,23 @@ public class PostService(HttpClient httpClient) : IPostService
             throw new Exception(content);
         }
         return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? [];
+    }
+
+    public async Task<PostPageResponse> GetPostsWithPages(int pageNumber, int pageSize = 10)
+    {
+        var response = await httpClient.GetAsync($"v1/Post/byPageNumber?pageNumber={pageNumber}&pageSize={pageSize}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+        return await response.Content.ReadFromJsonAsync<PostPageResponse>();
+
+        /*// Extract the data from the dynamic object
+        var posts = responseContent.item1;
+        var totalPages = responseContent.item2;
+
+        return (posts, totalPages);*/
     }
 
     public async Task<IEnumerable<PostModel>> GetPostsByUser()
@@ -40,6 +58,18 @@ public class PostService(HttpClient httpClient) : IPostService
             throw new Exception(content);
         }
         return await response.Content.ReadFromJsonAsync<IEnumerable<PostModel>>() ?? [];
+    }
+
+    public async Task<PostPageResponse> GetPostsByTopicsWithPages(IEnumerable<Guid> topicIds, int pageNumber, int pageSize)
+    {
+        var queryString = string.Join("&", topicIds.Select(id => $"topicIds={id}"));
+        var response = await httpClient.GetAsync($"v1/Post/byTopics/byPageNumber?{queryString}&pageNumber={pageNumber}&pageSize={pageSize}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+        return await response.Content.ReadFromJsonAsync<PostPageResponse>();
     }
 
     public async Task<IEnumerable<TopicModel>> GetTopics()

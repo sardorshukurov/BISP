@@ -34,6 +34,13 @@ public class PostController : ControllerBase
     {
         return await _postService.GetAll();
     }
+    
+    [AllowAnonymous]
+    [HttpGet("byPageNumber")]
+    public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize)
+    {
+        return Ok(await _postService.GetAllWithPages(pageNumber, pageSize));
+    }
 
     [Authorize]
     [HttpGet("byUser")]
@@ -62,6 +69,22 @@ public class PostController : ControllerBase
         try
         {
             var posts = await _postService.GetByTopics(topicIds);
+            return Ok(posts);
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500);
+        }
+    }
+    
+    [AllowAnonymous]
+    [HttpGet("byTopics/byPageNumber")]
+    public async Task<IActionResult> GetByTopics([FromQuery] IEnumerable<Guid> topicIds, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+    {
+        try
+        {
+            var posts = await _postService.GetByTopicsWithPages(topicIds, pageNumber, pageSize);
             return Ok(posts);
         }
         catch (Exception e)
