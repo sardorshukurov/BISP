@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Welisten.Services.Likes", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Welisten.Services.Moods", "Services\Welisten.Services.Moods\Welisten.Services.Moods.csproj", "{49FC370F-1DEB-4455-A019-EB1FAB408A62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Welisten.Services.Articles", "Services\Welisten.Services.Articles\Welisten.Services.Articles.csproj", "{24F7D6B4-D993-4C92-9CD4-1AE35257FBC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,7 @@ Global
 		{6821377B-0245-499C-8773-F9E8B0B0621F} = {2471E747-8E2E-46F4-83BC-381CC785D73E}
 		{47331CCF-B4CC-4F75-9CC7-2D577A6D7EC9} = {2471E747-8E2E-46F4-83BC-381CC785D73E}
 		{49FC370F-1DEB-4455-A019-EB1FAB408A62} = {2471E747-8E2E-46F4-83BC-381CC785D73E}
+		{24F7D6B4-D993-4C92-9CD4-1AE35257FBC3} = {2471E747-8E2E-46F4-83BC-381CC785D73E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C35869AC-5343-4151-A82B-D5AFAC4CB6BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -133,5 +136,9 @@ Global
 		{49FC370F-1DEB-4455-A019-EB1FAB408A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49FC370F-1DEB-4455-A019-EB1FAB408A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49FC370F-1DEB-4455-A019-EB1FAB408A62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24F7D6B4-D993-4C92-9CD4-1AE35257FBC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24F7D6B4-D993-4C92-9CD4-1AE35257FBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24F7D6B4-D993-4C92-9CD4-1AE35257FBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24F7D6B4-D993-4C92-9CD4-1AE35257FBC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

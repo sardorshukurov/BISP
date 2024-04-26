@@ -1,4 +1,5 @@
 using Welisten.Context.Seeder;
+using Welisten.Services.Articles;
 using Welisten.Services.Comments;
 using Welisten.Services.Likes;
 using Welisten.Services.Logger;
@@ -26,7 +27,7 @@ public static class Bootstrapper
             .AddLikeService()
             .AddTopicService()
             .AddMoodService()
-            ;
+            .AddArticleServices();
 
         return service;
     }

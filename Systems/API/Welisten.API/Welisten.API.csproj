@@ -41,6 +41,7 @@
         <ProjectReference Include="..\..\..\Data\Welisten.Context.Migrations.PgSql\Welisten.Context.Migrations.PgSql.csproj"/>
         <ProjectReference Include="..\..\..\Data\Welisten.Context.Seeder\Welisten.Context.Seeder.csproj"/>
         <ProjectReference Include="..\..\..\Data\Welisten.Context\Welisten.Context.csproj"/>
+        <ProjectReference Include="..\..\..\Services\Welisten.Services.Articles\Welisten.Services.Articles.csproj" />
         <ProjectReference Include="..\..\..\Services\Welisten.Services.Comments\Welisten.Services.Comments.csproj"/>
         <ProjectReference Include="..\..\..\Services\Welisten.Services.Likes\Welisten.Services.Likes.csproj"/>
         <ProjectReference Include="..\..\..\Services\Welisten.Services.Logger\Welisten.Services.Logger.csproj"/>
@@ -48,11 +49,6 @@
         <ProjectReference Include="..\..\..\Services\Welisten.Services.Posts\Welisten.Services.Posts.csproj"/>
         <ProjectReference Include="..\..\..\Services\Welisten.Services.Settings\Welisten.Services.Settings.csproj"/>
         <ProjectReference Include="..\..\..\Services\Welisten.Services.UserAccounts\Welisten.Services.UserAccounts.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="JsonFiles\articles.json" />
-      <None Include="JsonFiles\categories.json" />
     </ItemGroup>
 
 </Project>

@@ -39,7 +39,15 @@ public class PostController : ControllerBase
     [HttpGet("byPageNumber")]
     public async Task<IActionResult> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
-        return Ok(await _postService.GetAllWithPages(pageNumber, pageSize));
+        try
+        {
+            return Ok(await _postService.GetAllWithPages(pageNumber, pageSize));
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500);
+        }
     }
 
     [Authorize]
