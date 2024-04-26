@@ -14,7 +14,7 @@
 
         @if (!IsConnected && !_isWaiting)
         {
-            <MudContainer Class="input-group">
+            <MudContainer Class="input-group" Style="display: flex; justify-content: center; flex-direction: column; width: 30%">
                 <MudCheckBox @bind-Value="_anonymous">Connect anonymously?</MudCheckBox>
                 <MudButton Class="btn btn-primary" Variant="Variant.Filled" @onclick="Connect">Connect</MudButton>
             </MudContainer>

@@ -19,25 +19,31 @@
         
         @foreach (var mood in _moodRecords)
         {
-            <div style="display: flex; justify-content: center; vertical-align: top">
-                <MudCard Width="25%" Square="false" Outlined="true"
+            <div style="display: flex; justify-content: center; vertical-align: center;">
+                <MudText Typo="Typo.h2" Style="padding: 0">@mood.Mood.ImageLink</MudText>
+                <MudCard Width="35%" Square="false" Outlined="true"
                          Style="margin: 10px 0px 10px 0px; min-width: 300px; border-radius: 1rem">
                     <MudCardContent>
                         <MudContainer Style="padding: 0; display: flex; justify-content: space-between;">
-                            <MudText Typo="Typo.subtitle2">@mood.Mood.ImageLink @mood.Mood.Name – @mood.Event.Name</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary">@mood.Mood.Name – @mood.Event.Name</MudText>
                             <MudText Typo="Typo.subtitle2">@mood.Date.ToLocalTime().ToString("dd/MM/yyyy")</MudText>
                         </MudContainer>
-                        <MudContainer>
-                            <MudText Typo="Typo.body2" Style="padding: 0; overflow-wrap: break-word" Align="Align.Left">@mood.Text</MudText>
+                        <MudContainer Style="padding: 0">
+                            <MudText Typo="Typo.body1" Align="Align.Left"
+                                     Style="padding: 15px 0 0 0; overflow-wrap: break-word;">
+                                @mood.Text
+                            </MudText>
                         </MudContainer>
                     </MudCardContent>
                 </MudCard>
-                <MudButton OnClick="@(() => CreateEditMoodRecord(@mood.Id))" Size="Size.Small"
-                           Variant="Variant.Text">
-                    <MudIcon Icon="@Icons.Material.Rounded.Edit"/>
-                </MudButton>
+                <MudCardActions Style="display: flex; justify-content: right;">
+                    <MudButton OnClick="@(() => CreateEditMoodRecord(@mood.Id))" Size="Size.Small"
+                               Variant="Variant.Text">
+                        <MudIcon Size="Size.Small" Icon="@Icons.Material.Rounded.Edit"/>
+                    </MudButton>
+                </MudCardActions>
             </div>
-        
+
         } 
     </Authorized>
     <NotAuthorized>

@@ -76,6 +76,12 @@ public class CreateMoodRecordModelValidator : AbstractValidator<CreateMoodRecord
     public CreateMoodRecordModelValidator(IDbContextFactory<MainDbContext> dbContextFactory)
     {
         RuleFor(mr => mr.Text).MoodRecordText();
+        RuleFor(mr => mr.MoodId)
+            .NotEqual(Guid.Empty)
+            .WithMessage("What's your mood, body?");
+        RuleFor(mr => mr.EventId)
+            .NotEqual(Guid.Empty)
+            .WithMessage("What event caused this mood, body?");
         RuleFor(mr => mr.Date.ToUniversalTime())
             .Must(BeNotInFuture)
             .WithMessage("You cannot write about the future :(");
