@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Welisten.Common.Exceptions;
 using Welisten.Services.Logger.Logger;
 using Welisten.Services.Moods;
 using Welisten.Services.UserAccounts;
@@ -158,7 +159,36 @@ public class MoodController : ControllerBase
             return StatusCode(500);
         }
     }
-    
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out var userId))
+            {
+                await _moodService.DeleteMoodRecord(id, userId);
+                return Ok();
+            }
+            
+            return Unauthorized();
+        }
+        catch (ProcessException)
+        {
+            return NotFound();
+        }
+        catch (AuthenticationException)
+        {
+            return Unauthorized();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return StatusCode(500);
+        }
+    }
     private async Task<bool> IsEligible()
     {
         if (!await _userService.Exists(User))

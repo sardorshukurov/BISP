@@ -128,4 +128,19 @@ public class MoodService : IMoodService
         
         return _mapper.Map<MoodRecord, MoodRecordModel>(updatedMoodRecord);
     }
+
+    public async Task DeleteMoodRecord(Guid id, Guid userId)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        var moodRecord = await context.MoodRecords.FirstOrDefaultAsync(mr => mr.Uid == id);
+
+        if (moodRecord == null)
+            throw new ProcessException($"Mood record with ID: {id} not found");
+
+        if (moodRecord.UserId != userId)
+            throw new AuthenticationException();
+
+        context.MoodRecords.Remove(moodRecord);
+        await context.SaveChangesAsync();
+    }
 }

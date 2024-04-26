@@ -17,12 +17,12 @@ public class RegisterValidator : AbstractValidator<RegisterModel>
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Username is required.")
-            .MinimumLength(5).WithMessage("Username's minimum length is 5.")
+            .MinimumLength(3).WithMessage("Username's minimum length is 3.")
             .MaximumLength(50).WithMessage("Username's maximum length is 50.");
         
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("Firstname is required.")
-            .MinimumLength(5).WithMessage("Firstname's minimum length is 5.")
+            .MinimumLength(3).WithMessage("Firstname's minimum length is 3.")
             .MaximumLength(50).WithMessage("Firstname's maximum length is 50.");;
 
         RuleFor(x => x.Email)

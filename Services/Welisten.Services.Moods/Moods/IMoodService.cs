@@ -8,4 +8,5 @@ public interface IMoodService
     Task<MoodRecordModel?> GetMoodRecordById(Guid moodRecordId, Guid userId);
     Task CreateMoodRecord(CreateMoodRecordModel model, Guid userId);
     Task<MoodRecordModel> UpdateMoodRecord(Guid id, CreateMoodRecordModel model, Guid userId);
+    Task DeleteMoodRecord(Guid id, Guid userId);
 }

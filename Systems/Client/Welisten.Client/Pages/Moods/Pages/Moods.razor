@@ -1,5 +1,6 @@
 @page "/moods"
 @using Microsoft.AspNetCore.Components.Authorization
+@using Welisten.Client.Components
 @using Welisten.Client.Pages.Moods.Services
 @using Welisten.Client.Pages.Moods.Models
 @using Welisten.Client.Pages.Moods.Components
@@ -36,10 +37,14 @@
                         </MudContainer>
                     </MudCardContent>
                 </MudCard>
-                <MudCardActions Style="display: flex; justify-content: right;">
+                <MudCardActions Style="display: flex; flex-direction: column; vertical-align: center">
                     <MudButton OnClick="@(() => CreateEditMoodRecord(@mood.Id))" Size="Size.Small"
                                Variant="Variant.Text">
                         <MudIcon Size="Size.Small" Icon="@Icons.Material.Rounded.Edit"/>
+                    </MudButton>
+                    <MudButton OnClick="@(() => DeleteMoodRecord(@mood.Id))" Size="Size.Small"
+                               Variant="Variant.Text">
+                        <MudIcon Size="Size.Small" Icon="@Icons.Material.Rounded.Delete"/>
                     </MudButton>
                 </MudCardActions>
             </div>
@@ -84,7 +89,33 @@
             _moodRecords = await MoodService.GetAllMoodRecords();
             StateHasChanged();
         }
+    }
 
+    private async void DeleteMoodRecord(Guid id)
+    {
+        var parameters = new DialogParameters<_dialog>();
+        parameters.Add(x => x.ContentText, "Do you really want to delete the mood record? This process cannot be undone.");
+        parameters.Add(x => x.ButtonText, "Delete");
+        parameters.Add(x => x.Color, Color.Error);
+        
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<_dialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            try
+            {
+                await MoodService.DeleteMoodRecord(id);
+                Snackbar.Add("Deleted");
+                _moodRecords = await MoodService.GetAllMoodRecords();
+                StateHasChanged();
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Something went wrong", Severity.Error);
+            }
+        }
     }
     
     protected override async Task OnInitializedAsync()

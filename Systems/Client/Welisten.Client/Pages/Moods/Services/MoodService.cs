@@ -85,4 +85,14 @@ public class MoodService(HttpClient httpClient) : IMoodService
             throw new Exception(registerResult.ErrorDescription);
         }
     }
+
+    public async Task DeleteMoodRecord(Guid id)
+    {
+        var response = await httpClient.DeleteAsync($"v1/Mood/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception(content);
+        }
+    }
 }
