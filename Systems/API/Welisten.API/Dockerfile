@@ -20,4 +20,14 @@ RUN dotnet publish "Welisten.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Copy files to temporary directory
+COPY Data/Welisten.Context.Seeder/Demo/articles.csv /sample_data/articles.csv
+COPY Data/Welisten.Context.Seeder/Demo/categories.csv /sample_data/categories.csv
+
+# RUN chmod 777 sample_data/articles.csv
+# RUN chmod 777 sample_data/categories.csv
+
+
+# Set the entry point
 ENTRYPOINT ["dotnet", "Welisten.API.dll"]

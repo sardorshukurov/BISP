@@ -16,10 +16,10 @@
     <MudButtonGroup OverrideStyles="false">
         <AuthorizeView>
             <Authorized>
-                <MudButton Href="/articles" Variant="Variant.Filled" Color="Color.Default"><MudIcon Icon="@Icons.Material.Rounded.Article"/></MudButton>
-                <MudButton Href="/chat" Variant="Variant.Filled" Color="Color.Warning"><MudIcon Icon="@Icons.Material.Rounded.Chat"/></MudButton>
-                <MudButton Href="/moods" Variant="Variant.Filled" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Rounded.TagFaces"/></MudButton>
-                <MudButton Href="/createPost" Variant="Variant.Filled" Color="Color.Success"><MudIcon Icon="@Icons.Material.Rounded.Add"/></MudButton>
+                <MudButton Href="/articles" Variant="Variant.Filled" Color="Color.Info"><MudIcon Icon="@Icons.Material.Rounded.Article"/> Articles</MudButton>
+                <MudButton Href="/chat" Variant="Variant.Filled" Color="Color.Warning"><MudIcon Icon="@Icons.Material.Rounded.Chat"/> Chat</MudButton>
+                <MudButton Href="/moods" Variant="Variant.Filled" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Rounded.TagFaces"/> Mood Tracking</MudButton>
+                <MudButton Href="/createPost" Variant="Variant.Filled" Color="Color.Success"><MudIcon Icon="@Icons.Material.Rounded.Add"/> Post a story</MudButton>
                 <MudButton @onclick="@(() => NavManager.NavigateTo("/profile"))" Color="Color.Secondary" Variant="Variant.Filled">@name</MudButton>
                 <MudButton @onclick="Logout" Color="Color.Primary" Variant="Variant.Filled">Logout</MudButton>
             </Authorized>

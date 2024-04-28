@@ -1,3 +1,5 @@
+using System.Text;
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using Welisten.Context.Entities;
 using Welisten.Context.Entities.Articles;
@@ -205,4 +207,89 @@ public static class DemoHelper
 
 
     #endregion
+    
+    public static IEnumerable<ArticleCategory> GetCategories()
+    {
+        // Read the CSV file
+        var csvData = File.ReadAllLines("../sample_data/categories.csv");
+
+        // Skip the header row if necessary
+        var records = csvData.Skip(1);
+
+        var categories = new List<ArticleCategory>();
+        // Map CSV data to your entity model and insert into the database
+        foreach (var record in records)
+        {
+            var fields = record.Split(',');
+            var entity = new ArticleCategory()
+            {
+                Id = Convert.ToInt32(fields[0].Trim('\"')),
+                Name = fields[1].Trim('\"'),
+            };
+            categories.Add(entity);
+        }
+
+        return categories;
+    }
+    
+    public static IEnumerable<Article> GetArticles()
+    {
+        var articles = new List<Article>();
+
+        using (TextFieldParser parser = new TextFieldParser("../sample_data/articles.csv"))
+        {
+            parser.TextFieldType = FieldType.Delimited;
+            parser.SetDelimiters(",");
+
+            // Skip the header row
+            if (!parser.EndOfData)
+            {
+                parser.ReadLine(); // Skip header row
+            }
+
+            while (!parser.EndOfData)
+            {
+                string[] fields = parser.ReadFields();
+
+                var entity = new Article()
+                {
+                    Id = Convert.ToInt32(fields[0]),
+                    Title = fields[1],
+                    Subtitle = fields[2],
+                    Link = fields[3],
+                    Category = new ArticleCategory()
+                    {
+                        Id = Convert.ToInt32(fields[4])
+                    } 
+                };
+
+                articles.Add(entity);
+            }
+        }
+
+        return articles;
+        // Read the CSV file
+        // var csvData = File.ReadAllLines("../../../Data/Welisten.Context.Seeder/Demo/articles.csv");
+        //
+        // // Skip the header row if necessary
+        // var records = csvData.Skip(1);
+        //
+        // var articles = new List<Article>();
+        // // Map CSV data to your entity model and insert into the database
+        // foreach (var record in records)
+        // {
+        //     var fields = record.Split(',');
+        //     var entity = new Article()
+        //     {
+        //         Id = Convert.ToInt32(fields[0].Trim('\"')),
+        //         Title = fields[1].Trim('\"'),
+        //         Subtitle = fields[2].Trim('\"'),
+        //         Link = fields[3].Trim('\"'),
+        //         Category = new ArticleCategory()
+        //         {
+        //             Id = Convert.ToInt32(fields[4].Trim('\"'))
+        //         } 
+        //     };
+        //     articles.Add(entity);
+    }
 }

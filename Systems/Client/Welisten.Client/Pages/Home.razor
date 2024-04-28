@@ -63,6 +63,8 @@
         var result = await PostService.GetPostsWithPages(_currentPage, _pageSize);
         _posts = result.Item1;
         _totalPages = result.Item2;
+        if (_totalPages < _currentPage)
+            _currentPage = 1;
     }
 
     private async Task LikeOrDisLike(Guid id)
@@ -99,6 +101,8 @@
             var result = await PostService.GetPostsByTopicsWithPages(new Guid[]{_selectedTopicId}, _currentPage, _pageSize);
             _posts = result.Item1;
             _totalPages = result.Item2;
+            if (_totalPages < _currentPage)
+                _currentPage = 1;
         }
         catch (Exception)
         {
@@ -108,17 +112,14 @@
 
     private async Task LoadPage(int page)
     {
-        if (_currentPage <= _totalPages)
+        _currentPage = page;
+        if (_selectedTopicId != Guid.Empty)
         {
-            _currentPage = page;
-            if (_selectedTopicId != Guid.Empty)
-            {
-                await GetPostsByTopic(_selectedTopicId);
-            }
-            else
-            {
-                await ReloadData();
-            }
+            await GetPostsByTopic(_selectedTopicId);
+        }
+        else
+        {
+            await ReloadData();
         }
     }
     

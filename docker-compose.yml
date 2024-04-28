@@ -12,6 +12,14 @@ services:
     depends_on:
       - welisten_postgresql
 
+  welisten_client:
+    image: ${DOCKER_REGISTRY-}welistenclient
+    build:
+      context: .
+      dockerfile: Systems/Client/Welisten.Client/Dockerfile
+    depends_on:
+      - welisten_api
+
   welisten_seq:
     image: datalust/seq:latest
     container_name: welisten_seq

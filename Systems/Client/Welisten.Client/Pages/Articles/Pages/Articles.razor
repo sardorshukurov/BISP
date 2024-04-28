@@ -60,6 +60,8 @@
         var result = await ArticleService.GetArticles(_currentPage, _pageSize);
         _articles = result.Item1;
         _totalPages = result.Item2;
+        if (_totalPages < _currentPage)
+            _currentPage = 1;
     }
 
     private async Task GetArticlesByCategory(int categoryId)
@@ -70,8 +72,10 @@
             var result = await ArticleService.GetArticles(categoryId, _currentPage, _pageSize);
             _articles = result.Item1;
             _totalPages = result.Item2;
+            if (_totalPages < _currentPage)
+                _currentPage = 1;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Snackbar.Add("Something went wrong", Severity.Error);
         }
@@ -79,17 +83,14 @@
 
     private async Task LoadPage(int page)
     {
-        if (_currentPage <= _totalPages)
+        _currentPage = page;
+        if (_selectedCategoryId != 0)
         {
-            _currentPage = page;
-            if (_selectedCategoryId != 0)
-            {
-                await GetArticlesByCategory(_selectedCategoryId);
-            }
-            else
-            {
-                await ReloadData();
-            }
+            await GetArticlesByCategory(_selectedCategoryId);
+        }
+        else
+        {
+            await ReloadData();
         }
     }
     

@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Welisten.Context\Welisten.Context.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.Elfie" Version="1.0.0" />
+    </ItemGroup>
+
 </Project>

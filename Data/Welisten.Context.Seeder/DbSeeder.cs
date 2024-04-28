@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Welisten.Context.Context;
 using Welisten.Context.Entities;
+using Welisten.Context.Entities.Articles;
 using Welisten.Context.Seeder.Demo;
 using Welisten.Context.Settings;
 
@@ -60,6 +61,29 @@ public static class DbSeeder
             await context.Moods.AddRangeAsync(DemoHelper.Moods);
             await context.SaveChangesAsync();
         }
+
+        if (!await context.ArticleCategories.AnyAsync())
+        {
+            await context.ArticleCategories.AddRangeAsync(DemoHelper.GetCategories());
+            await context.SaveChangesAsync();
+        }
+        
+        if (!await context.Articles.AnyAsync())
+        {
+            var articles = DemoHelper.GetArticles();
+
+            foreach (var article in articles)
+            {
+                // Retrieve the existing ArticleCategory from the context
+                var existingCategory = await context.ArticleCategories.FindAsync(article.Category.Id);
+
+                // Attach the existing ArticleCategory to the Article
+                article.Category = existingCategory;
+                context.Attach(article.Category);
+                await context.Articles.AddAsync(article);
+                await context.SaveChangesAsync();
+            }
+        }
         
         await AddAdmin(serviceProvider);
     }
@@ -92,5 +116,6 @@ public static class DbSeeder
             }
         }
     }
+
 
 }

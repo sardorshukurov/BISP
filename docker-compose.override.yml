@@ -30,6 +30,12 @@ services:
       - "5341:5341"
       - "8081:80"
 
+  welisten_client:
+    ports:
+      - "10001:8082"
+    networks:
+      - shared_welisten
+
 networks:
   shared_welisten:
     name: welisten
